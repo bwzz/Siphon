@@ -2,7 +2,6 @@ package com.yuantiku.siphon;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -51,7 +50,7 @@ public class MainActivityFragment extends BaseFragment {
                         .callback(new ResultCallback() {
                             @Override
                             public boolean onResult(int resultCode, Intent data) {
-                                Log.e("", "resultCode " + resultCode);
+                                L.e("", "resultCode " + resultCode, data);
                                 return false;
                             }
                         }).get();
