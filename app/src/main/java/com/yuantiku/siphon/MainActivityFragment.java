@@ -1,15 +1,12 @@
 package com.yuantiku.siphon;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import bwzz.activityCallback.LaunchArgument;
-import bwzz.activityCallback.ResultCallback;
 import bwzz.activityReuse.ContainerActivity;
 import bwzz.activityReuse.FragmentPackage;
 import bwzz.activityReuse.ReuseIntentBuilder;
@@ -32,30 +29,24 @@ public class MainActivityFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ((TextView) view.findViewById(R.id.text)).setText("text = " + i);
         final int finalI = i;
-        view.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putInt("i", finalI + 1);
-                FragmentPackage fragmentPackage = new FragmentPackage();
-                fragmentPackage.setContainer(android.R.id.content)
-                        .setArgument(bundle)
-                        .setFragmentClassName(MainActivityFragment.class.getName());
+        view.setOnClickListener((v) -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("i", finalI + 1);
+            FragmentPackage fragmentPackage = new FragmentPackage();
+            fragmentPackage.setContainer(android.R.id.content)
+                    .setArgument(bundle)
+                    .setFragmentClassName(MainActivityFragment.class.getName());
 
-                LaunchArgument argument = ReuseIntentBuilder.build()
-                        .activty(ContainerActivity.class)
-                        .fragmentPackage(fragmentPackage)
-                        .getLaunchArgumentBuiler(getActivity())
-                        .requestCode(123)
-                        .callback(new ResultCallback() {
-                            @Override
-                            public boolean onResult(int resultCode, Intent data) {
-                                L.e("", "resultCode " + resultCode, data);
-                                return false;
-                            }
-                        }).get();
-                launch(argument);
-            }
+            LaunchArgument argument = ReuseIntentBuilder.build()
+                    .activty(ContainerActivity.class)
+                    .fragmentPackage(fragmentPackage)
+                    .getLaunchArgumentBuiler(getActivity())
+                    .requestCode(123)
+                    .callback((resultCode, data) -> {
+                        L.e("", "resultCode " + resultCode, data);
+                        return false;
+                    }).get();
+            launch(argument);
         });
         return view;
     }
