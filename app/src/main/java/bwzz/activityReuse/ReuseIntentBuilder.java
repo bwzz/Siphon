@@ -39,7 +39,7 @@ public class ReuseIntentBuilder {
         return intent;
     }
 
-    public LaunchArgument getLaunchArgument(Context context) {
-        return argumentBuilder.intent(get(context)).get();
+    public LaunchArgument.Builder getLaunchArgumentBuiler(Context context) {
+        return argumentBuilder.intent(get(context));
     }
 }
