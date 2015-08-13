@@ -23,6 +23,10 @@ public class LaunchHelper {
 
     public boolean onResult(int requestCode, int resultCode, Intent data) {
         LaunchArgument argument = argumentSparseArray.get(requestCode);
-        return argument.applyCallback(resultCode, data);
+        if (argument != null) {
+            return argument.applyCallback(resultCode, data);
+        } else {
+            return false;
+        }
     }
 }
