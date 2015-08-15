@@ -6,18 +6,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import bwzz.activityCallback.LaunchArgument;
 import bwzz.activityReuse.ContainerActivity;
 import bwzz.activityReuse.FragmentPackage;
 import bwzz.activityReuse.ReuseIntentBuilder;
 import bwzz.fragment.BaseFragment;
+import rx.android.schedulers.AndroidSchedulers;
 
+import com.yuantiku.siphon.data.FileEntry;
 import com.yuantiku.siphon.webservice.ServiceFactory;
+
+import org.w3c.dom.Text;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends BaseFragment {
+    @Bind(R.id.file_name)
+    TextView fileName;
+
+    @Bind(R.id.date)
+    TextView date;
 
     public MainActivityFragment() {}
 
@@ -29,13 +41,15 @@ public class MainActivityFragment extends BaseFragment {
             i = getArguments().getInt("i");
         }
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        ((TextView) view.findViewById(R.id.text)).setText("text = " + i);
-        final int finalI = i;
-        view.setOnClickListener((v) -> {
-            load();
-            launch(finalI);
-        });
+        ButterKnife.bind(this, view);
+        fileName.setText("Nmae");
+        date.setText("Date");
         return view;
+    }
+
+    @OnClick(R.id.file_item)
+    public void refresh(View view) {
+        load();
     }
 
     private void launch(int finalI) {
@@ -59,10 +73,16 @@ public class MainActivityFragment extends BaseFragment {
     }
 
     private void load() {
+        L.e(Thread.currentThread().getId());
         ServiceFactory.getService()
                 .listFiles("android/102/alpha")
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((list) -> {
-                    L.i(list);
+                    FileEntry fileEntry = list.get(0);
+                    fileName.setText(fileEntry.name);
+                    date.setText(fileEntry.date);
+                }, (error) -> {
+                    L.e(error);
                 });
     }
 }

@@ -10,6 +10,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import bwzz.log.LogCat;
 import retrofit.converter.ConversionException;
 import retrofit.converter.Converter;
 import retrofit.mime.TypedInput;
@@ -36,8 +37,8 @@ public class HtmlToFileEntriesConverter implements Converter {
                 FileEntry fileEntry = new FileEntry();
                 fileEntry.href = element.attr("href");
                 Elements divs = element.select("div");
-                fileEntry.name = divs.get(0).data();
-                fileEntry.date = divs.get(1).data();
+                fileEntry.name = divs.get(0).text();
+                fileEntry.date = divs.get(1).text();
                 fileEntryList.add(fileEntry);
             }
         } catch (IOException e) {
