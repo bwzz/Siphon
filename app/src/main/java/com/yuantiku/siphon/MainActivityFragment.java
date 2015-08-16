@@ -43,15 +43,15 @@ public class MainActivityFragment extends BaseFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onResume() {
+        super.onResume();
         bus.register(this);
     }
 
     @Override
-    public void onDestroy() {
+    public void onPause() {
         bus.unregister(this);
-        super.onDestroy();
+        super.onPause();
     }
 
     @Override

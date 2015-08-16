@@ -47,6 +47,8 @@ public class WorkService extends Service {
         super.onDestroy();
     }
 
+    private TaskResultEvent latestTaskResultEvent;
+
     @Subscribe
     public void onTaskEvent(TaskEvent taskEvent) {
         ServiceFactory.createZhenguanyuService()
@@ -56,6 +58,7 @@ public class WorkService extends Service {
                     TaskResultEvent<FileEntry> taskResultEvent = new TaskResultEvent();
                     taskResultEvent.fileEntries = list;
                     bus.post(taskResultEvent);
+                    latestTaskResultEvent = taskResultEvent;
                 }, (error) -> {
                     L.e(error);
                 });
@@ -63,6 +66,9 @@ public class WorkService extends Service {
 
     @Produce
     public TaskResultEvent<FileEntry> produceTaskEvent() {
+        if (latestTaskResultEvent != null) {
+            return latestTaskResultEvent;
+        }
         TaskResultEvent<FileEntry> taskResultEvent = new TaskResultEvent();
         taskResultEvent.fileEntries = new LinkedList<>();
         FileEntry fileEntry = new FileEntry();
