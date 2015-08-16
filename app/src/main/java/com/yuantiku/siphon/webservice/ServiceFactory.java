@@ -1,5 +1,6 @@
 package com.yuantiku.siphon.webservice;
 
+import com.yuantiku.siphon.data.FileConverter;
 import com.yuantiku.siphon.data.HtmlToFileEntriesConverter;
 
 import retrofit.RestAdapter;
@@ -10,12 +11,23 @@ import retrofit.RestAdapter.LogLevel;
  * @date 15/8/15.
  */
 public class ServiceFactory {
-    public static ZhenguanyuService getService() {
+    private final static String EndPoint = "https://app.zhenguanyu.com";
+
+    public static ZhenguanyuService createZhenguanyuService() {
         RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("https://app.zhenguanyu.com")
+                .setEndpoint(EndPoint)
                 .setLogLevel(LogLevel.BASIC)
                 .setConverter(new HtmlToFileEntriesConverter())
                 .build();
         return restAdapter.create(ZhenguanyuService.class);
+    }
+
+    public static FileDownloadService createDownloadService(String targetFilePath) {
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(EndPoint)
+                .setLogLevel(LogLevel.BASIC)
+                .setConverter(new FileConverter(targetFilePath))
+                .build();
+        return restAdapter.create(FileDownloadService.class);
     }
 }

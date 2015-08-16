@@ -20,6 +20,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.yuantiku.siphon.data.FileEntry;
 import com.yuantiku.siphon.otto.BusFactory;
+import com.yuantiku.siphon.otto.DownloadTaskEvent;
 import com.yuantiku.siphon.otto.TaskEvent;
 import com.yuantiku.siphon.otto.TaskResultEvent;
 import com.yuantiku.siphon.webservice.ServiceFactory;
@@ -95,8 +96,9 @@ public class MainActivityFragment extends BaseFragment {
     @Subscribe
     public void onTaskResultEvent(TaskResultEvent<FileEntry> taskResultEvent) {
         FileEntry fileEntry = taskResultEvent.fileEntries.get(0);
-        fileName.setText(fileEntry.name);
+        fileName.setText(fileEntry.href);
         date.setText(fileEntry.date);
+        bus.post(new DownloadTaskEvent(fileEntry));
     }
 
     private void load() {

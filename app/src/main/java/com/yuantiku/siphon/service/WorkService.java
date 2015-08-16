@@ -2,6 +2,7 @@ package com.yuantiku.siphon.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -10,10 +11,12 @@ import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 import com.yuantiku.siphon.data.FileEntry;
 import com.yuantiku.siphon.otto.BusFactory;
+import com.yuantiku.siphon.otto.DownloadTaskEvent;
 import com.yuantiku.siphon.otto.TaskEvent;
 import com.yuantiku.siphon.otto.TaskResultEvent;
 import com.yuantiku.siphon.webservice.ServiceFactory;
 
+import java.io.File;
 import java.util.LinkedList;
 
 import bwzz.log.LogCat;
@@ -46,7 +49,7 @@ public class WorkService extends Service {
 
     @Subscribe
     public void onTaskEvent(TaskEvent taskEvent) {
-        ServiceFactory.getService()
+        ServiceFactory.createZhenguanyuService()
                 .listFiles("android/102/alpha")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((list) -> {
@@ -69,4 +72,16 @@ public class WorkService extends Service {
         return taskResultEvent;
     }
 
+    @Subscribe
+    public void onDownloadTaskEvent(DownloadTaskEvent downloadTaskEvent) {
+        FileEntry fileEntry = downloadTaskEvent.fileEntry;
+        String targetFilePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileEntry.name).getAbsolutePath();
+        ServiceFactory.createDownloadService(targetFilePath)
+                .get("android/102/alpha/" + fileEntry.name)
+                .subscribe(file -> {
+                    L.i("download success to : ", file.getAbsolutePath());
+                }, error -> {
+                    L.e(error);
+                });
+    }
 }
