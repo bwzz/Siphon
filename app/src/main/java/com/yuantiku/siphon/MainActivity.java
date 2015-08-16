@@ -1,8 +1,11 @@
 package com.yuantiku.siphon;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.yuantiku.siphon.service.WorkService;
 
 import bwzz.activity.BaseActivity;
 
@@ -21,23 +24,26 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         trustAllHosts();
+        startService(new Intent(this, WorkService.class));
     }
 
     public static void trustAllHosts() {
         // Create a trust manager that does not validate certificate chains
         // Android use X509 cert
-        TrustManager[] trustAllCerts = new TrustManager[] {
-            new X509TrustManager() {
-                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                    return new java.security.cert.X509Certificate[] {};
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return new java.security.cert.X509Certificate[]{};
+                    }
+
+                    public void checkClientTrusted(X509Certificate[] chain,
+                                                   String authType) throws CertificateException {
+                    }
+
+                    public void checkServerTrusted(X509Certificate[] chain,
+                                                   String authType) throws CertificateException {
+                    }
                 }
-
-                public void checkClientTrusted(X509Certificate[] chain,
-                        String authType) throws CertificateException {}
-
-                public void checkServerTrusted(X509Certificate[] chain,
-                        String authType) throws CertificateException {}
-            }
         };
 
         // Install the all-trusting trust manager

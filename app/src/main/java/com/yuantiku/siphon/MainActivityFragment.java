@@ -16,7 +16,12 @@ import bwzz.activityReuse.ReuseIntentBuilder;
 import bwzz.fragment.BaseFragment;
 import rx.android.schedulers.AndroidSchedulers;
 
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 import com.yuantiku.siphon.data.FileEntry;
+import com.yuantiku.siphon.otto.BusFactory;
+import com.yuantiku.siphon.otto.TaskEvent;
+import com.yuantiku.siphon.otto.TaskResultEvent;
 import com.yuantiku.siphon.webservice.ServiceFactory;
 
 import org.w3c.dom.Text;
@@ -31,11 +36,26 @@ public class MainActivityFragment extends BaseFragment {
     @Bind(R.id.date)
     TextView date;
 
-    public MainActivityFragment() {}
+    private Bus bus = BusFactory.createBus();
+
+    public MainActivityFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        bus.register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        bus.unregister(this);
+        super.onDestroy();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         int i = 0;
         if (getArguments() != null) {
             i = getArguments().getInt("i");
@@ -72,17 +92,14 @@ public class MainActivityFragment extends BaseFragment {
         launch(argument);
     }
 
+    @Subscribe
+    public void onTaskResultEvent(TaskResultEvent<FileEntry> taskResultEvent) {
+        FileEntry fileEntry = taskResultEvent.fileEntries.get(0);
+        fileName.setText(fileEntry.name);
+        date.setText(fileEntry.date);
+    }
+
     private void load() {
-        L.e(Thread.currentThread().getId());
-        ServiceFactory.getService()
-                .listFiles("android/102/alpha")
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((list) -> {
-                    FileEntry fileEntry = list.get(0);
-                    fileName.setText(fileEntry.name);
-                    date.setText(fileEntry.date);
-                }, (error) -> {
-                    L.e(error);
-                });
+        BusFactory.createBus().post(new TaskEvent());
     }
 }
