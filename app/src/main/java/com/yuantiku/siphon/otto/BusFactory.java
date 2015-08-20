@@ -8,7 +8,7 @@ import com.squareup.otto.Bus;
 public class BusFactory {
     private static Bus bus;
 
-    public static synchronized Bus createBus() {
+    public static synchronized Bus getBus() {
         if (bus == null) {
             bus = new Bus();
         }

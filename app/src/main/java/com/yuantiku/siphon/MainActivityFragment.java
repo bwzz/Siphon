@@ -6,6 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+import com.yuantiku.siphon.data.FileEntry;
+import com.yuantiku.siphon.otto.BusFactory;
+import com.yuantiku.siphon.otto.taskevent.SubmitTaskEvent;
+import com.yuantiku.siphon.otto.taskevent.TaskFinishEvent;
+import com.yuantiku.siphon.otto.taskevent.TaskStartEvent;
+import com.yuantiku.siphon.task.DownloadTask;
+import com.yuantiku.siphon.task.SyncTask;
+import com.yuantiku.siphon.task.TaskFactory;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -14,14 +25,7 @@ import bwzz.activityReuse.ContainerActivity;
 import bwzz.activityReuse.FragmentPackage;
 import bwzz.activityReuse.ReuseIntentBuilder;
 import bwzz.fragment.BaseFragment;
-
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
-import com.yuantiku.siphon.data.FileEntry;
-import com.yuantiku.siphon.otto.BusFactory;
-import com.yuantiku.siphon.otto.DownloadTaskEvent;
-import com.yuantiku.siphon.otto.TaskEvent;
-import com.yuantiku.siphon.otto.TaskResultEvent;
+import bwzz.taskmanager.ITask;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -33,7 +37,11 @@ public class MainActivityFragment extends BaseFragment {
     @Bind(R.id.date)
     TextView date;
 
-    private Bus bus = BusFactory.createBus();
+    @Bind(R.id.status)
+    TextView status;
+
+    private Bus bus = BusFactory.getBus();
+
 
     @Override
     public void onResume() {
@@ -49,7 +57,7 @@ public class MainActivityFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         int i = 0;
         if (getArguments() != null) {
             i = getArguments().getInt("i");
@@ -87,14 +95,38 @@ public class MainActivityFragment extends BaseFragment {
     }
 
     @Subscribe
-    public void onTaskResultEvent(TaskResultEvent<FileEntry> taskResultEvent) {
-        FileEntry fileEntry = taskResultEvent.fileEntries.get(0);
-        fileName.setText(fileEntry.name);
-        date.setText(fileEntry.date);
-        bus.post(new DownloadTaskEvent(fileEntry));
+    public void onTaskFinishEvent(TaskFinishEvent taskFinishEvent) {
+        ITask task = taskFinishEvent.getTask();
+        if (task instanceof SyncTask) {
+            SyncTask syncTask = (SyncTask) task;
+            showStatus("finish sync : " + syncTask.getID());
+            FileEntry fileEntry = syncTask.getFileEntries().get(0);
+            fileName.setText(fileEntry.name);
+            date.setText(fileEntry.date);
+            bus.post(new SubmitTaskEvent(TaskFactory.createDownloadTask(fileEntry)));
+        } else if (task instanceof DownloadTask) {
+            DownloadTask downloadTask = (DownloadTask) task;
+            showStatus("download finished : " + downloadTask.getTargetFile());
+        }
+    }
+
+    @Subscribe
+    public void onTaskStartEvent(TaskStartEvent taskStartEvent) {
+        ITask task = taskStartEvent.getTask();
+        if (task instanceof SyncTask) {
+            SyncTask syncTask = (SyncTask) task;
+            showStatus("start sync : " + syncTask.getID());
+        } else if (task instanceof DownloadTask) {
+            DownloadTask downloadTask = (DownloadTask) task;
+            showStatus("start download : " + downloadTask.getID());
+        }
+    }
+
+    private void showStatus(String status) {
+        this.status.setText(status);
     }
 
     private void load() {
-        BusFactory.createBus().post(new TaskEvent());
+        bus.post(new SubmitTaskEvent(TaskFactory.createSyncTask("android/102/alpha")));
     }
 }

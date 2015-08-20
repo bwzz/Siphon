@@ -20,29 +20,26 @@ public class TaskManager {
 
     private ITaskReporter taskReporter;
 
+    private boolean isRunning;
+
     public TaskManager(int maxRunningTaskCount) {
         this.maxRunningTaskCount = maxRunningTaskCount;
+    }
+
+    public void start() {
+        isRunning = true;
+        schedule();
+    }
+
+    public void stop() {
+        isRunning = false;
+        cancelTask(null);
     }
 
     public void setTaskReporter(ITaskReporter taskReporter) {
         if (taskReporter == null) {
             // TODO : mock reporter factory
-            this.taskReporter = new ITaskReporter() {
-                @Override
-                public void onTaskStart(ITask task) {
-
-                }
-
-                @Override
-                public void onTaskProgress(ITask task, float percent) {
-
-                }
-
-                @Override
-                public void onTaskFinish(ITask task) {
-
-                }
-            };
+            this.taskReporter = ITaskReporter.EmptyTaskReporter;
         } else {
             this.taskReporter = taskReporter;
         }
@@ -51,11 +48,14 @@ public class TaskManager {
     public void addTask(ITask task) {
         if (!readyTasks.contains(task)) {
             readyTasks.add(task);
-            Collections.sort(readyTasks, new Comparator<ITask>() {
-                @Override
-                public int compare(ITask lhs, ITask rhs) {
-                    return 0;
+            Collections.sort(readyTasks, (ITask lhs, ITask rhs) -> {
+                int res = lhs.getTaskPriority().compareTo(rhs.getTaskPriority());
+                if (res != 0) {
+                    long l = lhs.getCreateTime();
+                    long r = rhs.getCreateTime();
+                    res = l < r ? -1 : (l == r ? 0 : 1);
                 }
+                return -res;// dec
             });
         }
         schedule();
@@ -63,7 +63,7 @@ public class TaskManager {
 
     /**
      * Cancel task who return true when apply ITaskFilter.filter
-     * 
+     *
      * @param taskFilter : if null, cancel all tasks
      */
     public void cancelTask(ITaskFilter taskFilter) {
@@ -79,20 +79,34 @@ public class TaskManager {
         while (taskIterator.hasNext()) {
             ITask task = taskIterator.next();
             if (taskFilter == null || taskFilter.filter(task)) {
+                task.cancel();
                 taskIterator.remove();
+                reportCancelTask(task);
             }
         }
     }
 
     private void schedule() {
+        if (!isRunning) {
+            return;
+        }
         if (runningTasks.size() >= maxRunningTaskCount) {
             return;
         }
         if (readyTasks.isEmpty()) {
             return;
         }
-        ITask task = readyTasks.remove(0);
-        runTask(task);
+        Iterator<ITask> iterator = readyTasks.iterator();
+        while (iterator.hasNext()) {
+            ITask task = iterator.next();
+            iterator.remove();
+            if (task.isCanceled()) {
+                reportCancelTask(task);
+            } else {
+                runTask(task);
+                break;
+            }
+        }
     }
 
     private void runTask(ITask task) {
@@ -105,6 +119,10 @@ public class TaskManager {
         schedule();
     }
 
+    private void reportCancelTask(ITask task) {
+        taskReporterWrapper.onTaskCanceled(task);
+    }
+
     private ITaskReporter taskReporterWrapper = new ITaskReporter() {
         @Override
         public void onTaskStart(ITask task) {
@@ -114,6 +132,11 @@ public class TaskManager {
         @Override
         public void onTaskProgress(ITask task, float percent) {
             taskReporter.onTaskProgress(task, percent);
+        }
+
+        @Override
+        public void onTaskCanceled(ITask task) {
+            taskReporter.onTaskCanceled(task);
         }
 
         @Override

@@ -1,5 +1,7 @@
 package bwzz.taskmanager;
 
+import android.support.annotation.Nullable;
+
 /**
  * @author wanghb
  * @date 15/8/19.
@@ -13,5 +15,7 @@ public interface ITask {
 
     void cancel();
 
-    void run(ITaskReporter taskReportor);
+    boolean isCanceled();
+
+    void run(@Nullable ITaskReporter taskReporter);
 }
