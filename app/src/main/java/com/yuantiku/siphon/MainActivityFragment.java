@@ -1,11 +1,20 @@
 package com.yuantiku.siphon;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import bwzz.fragment.BaseFragment;
+import bwzz.taskmanager.ITask;
+
+import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.yuantiku.siphon.data.FileEntry;
@@ -17,36 +26,40 @@ import com.yuantiku.siphon.task.DownloadTask;
 import com.yuantiku.siphon.task.SyncTask;
 import com.yuantiku.siphon.task.TaskFactory;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import bwzz.activityCallback.LaunchArgument;
-import bwzz.activityReuse.ContainerActivity;
-import bwzz.activityReuse.FragmentPackage;
-import bwzz.activityReuse.ReuseIntentBuilder;
-import bwzz.fragment.BaseFragment;
-import bwzz.taskmanager.ITask;
+import java.io.File;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends BaseFragment {
-    @Bind(R.id.file_name)
-    TextView fileName;
+    @Bind(R.id.sync)
+    View sync;
 
-    @Bind(R.id.date)
-    TextView date;
+    @Bind(R.id.sync_install)
+    View syncInstall;
+
+    @Bind(R.id.install)
+    View install;
 
     @Bind(R.id.status)
     TextView status;
 
+    @Bind(R.id.progress_wheel)
+    ProgressWheel progressWheel;
+
     private Bus bus = BusFactory.getBus();
 
+    private boolean installAuto;
+
+    private FileEntry fileEntry;
+
+    private File apkFile;
 
     @Override
     public void onResume() {
         super.onResume();
         bus.register(this);
+        install.setEnabled(apkFile != null && apkFile.exists());
     }
 
     @Override
@@ -57,41 +70,33 @@ public class MainActivityFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        int i = 0;
-        if (getArguments() != null) {
-            i = getArguments().getInt("i");
-        }
+            Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
-        fileName.setText("Nmae");
-        date.setText("Date");
         return view;
     }
 
-    @OnClick(R.id.file_item)
-    public void refresh(View view) {
-        load();
+    @OnClick(R.id.sync_install)
+    public void syncInstall(View view) {
+        installAuto = true;
+        sync(sync);
     }
 
-    private void launch(int finalI) {
-        Bundle bundle = new Bundle();
-        bundle.putInt("i", finalI + 1);
-        FragmentPackage fragmentPackage = new FragmentPackage();
-        fragmentPackage.setContainer(android.R.id.content)
-                .setArgument(bundle)
-                .setFragmentClassName(MainActivityFragment.class.getName());
+    @OnClick(R.id.sync)
+    public void sync(View view) {
+        bus.post(new SubmitTaskEvent(TaskFactory.createSyncTask("android/102/alpha")));
+        view.setEnabled(false);
+        syncInstall.setEnabled(false);
+        progressWheel.setVisibility(View.VISIBLE);
+    }
 
-        LaunchArgument argument = ReuseIntentBuilder.build()
-                .activty(ContainerActivity.class)
-                .fragmentPackage(fragmentPackage)
-                .getLaunchArgumentBuiler(getActivity())
-                .requestCode(123)
-                .callback((resultCode, data) -> {
-                    L.e("", "resultCode " + resultCode, data);
-                    return false;
-                }).get();
-        launch(argument);
+    @OnClick(R.id.install)
+    public void install(View view) {
+        if (apkFile != null && apkFile.exists()) {
+            installApk(apkFile);
+        } else {
+            showStatus("先同步下吧");
+        }
     }
 
     @Subscribe
@@ -99,14 +104,22 @@ public class MainActivityFragment extends BaseFragment {
         ITask task = taskFinishEvent.getTask();
         if (task instanceof SyncTask) {
             SyncTask syncTask = (SyncTask) task;
-            showStatus("finish sync : " + syncTask.getID());
+            showStatus("同步完成 : " + syncTask.getID());
             FileEntry fileEntry = syncTask.getFileEntries().get(0);
-            fileName.setText(fileEntry.name);
-            date.setText(fileEntry.date);
             bus.post(new SubmitTaskEvent(TaskFactory.createDownloadTask(fileEntry)));
         } else if (task instanceof DownloadTask) {
             DownloadTask downloadTask = (DownloadTask) task;
-            showStatus("download finished : " + downloadTask.getTargetFile());
+            apkFile = downloadTask.getTargetFile();
+            install.setEnabled(true);
+            showStatus("下载完成 : " + downloadTask.getTargetFile());
+            if (installAuto) {
+                installAuto = false;
+                installApk(apkFile);
+            }
+            sync.setEnabled(true);
+            install.setEnabled(true);
+            syncInstall.setEnabled(true);
+            progressWheel.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -115,10 +128,10 @@ public class MainActivityFragment extends BaseFragment {
         ITask task = taskStartEvent.getTask();
         if (task instanceof SyncTask) {
             SyncTask syncTask = (SyncTask) task;
-            showStatus("start sync : " + syncTask.getID());
+            showStatus("开始同步 : " + syncTask.getID());
         } else if (task instanceof DownloadTask) {
             DownloadTask downloadTask = (DownloadTask) task;
-            showStatus("start download : " + downloadTask.getID());
+            showStatus("开始下载 : " + downloadTask.getID());
         }
     }
 
@@ -126,7 +139,16 @@ public class MainActivityFragment extends BaseFragment {
         this.status.setText(status);
     }
 
-    private void load() {
-        bus.post(new SubmitTaskEvent(TaskFactory.createSyncTask("android/102/alpha")));
+    private void installApk(File apkFile) {
+        try {
+            Intent intent = new Intent();
+            intent.setAction(android.content.Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } catch (Exception e) {
+            showStatus("安转失败了，是人品问题。");
+        }
     }
+
 }
