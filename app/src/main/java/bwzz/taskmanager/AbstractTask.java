@@ -42,6 +42,7 @@ public abstract class AbstractTask<R> implements ITask {
         return isCanceled;
     }
 
+    @Override
     public R getResult() {
         return result;
     }
@@ -50,6 +51,7 @@ public abstract class AbstractTask<R> implements ITask {
         this.result = result;
     }
 
+    @Override
     public TaskException getTaskException() {
         return taskException;
     }

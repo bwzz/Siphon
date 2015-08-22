@@ -13,4 +13,8 @@ public class TaskFactory {
     public static DownloadApkTask createDownloadTask(FileEntry fileEntry) {
         return new DownloadApkTask(fileEntry);
     }
+
+    public static DownloadTask createDownloadTask(String src, String target) {
+        return new DownloadTask(src, target);
+    }
 }

@@ -2,6 +2,7 @@ package com.yuantiku.siphon.task;
 
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.koushikdutta.async.future.Future;
 import com.koushikdutta.ion.Ion;
@@ -45,6 +46,7 @@ public class DownloadTask extends AbstractTask<File> {
         future = Ion
                 .with(ApplicationFactory.getApplication())
                 .load(source)
+                .setLogging("DownloadTask", Log.DEBUG)
                 .progress((downloaded, total) -> taskReporter.onTaskProgress(this, (float) (downloaded * 100d / total)))
                 .write(new File(target))
                 .setCallback((e, result) -> {

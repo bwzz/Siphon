@@ -8,12 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.koushikdutta.ion.Ion;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.helper.ApkHelper;
 import com.yuantiku.siphon.helper.AppHelper;
 import com.yuantiku.siphon.helper.PathHelper;
+import com.yuantiku.siphon.task.DownloadTask;
+import com.yuantiku.siphon.task.TaskFactory;
 
 import java.io.File;
 
@@ -21,6 +22,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import bwzz.fragment.BaseFragment;
+import bwzz.taskmanager.ITask;
+import bwzz.taskmanager.ITaskReporter;
 import im.fir.sdk.FIR;
 import im.fir.sdk.callback.VersionCheckCallback;
 import im.fir.sdk.version.AppVersion;
@@ -76,26 +79,41 @@ public class CheckUpdateFragment extends BaseFragment {
         String filename = String.format("%s-%s.apk", AppHelper.getAppName(getActivity()), appVersion.getVersionName());
         apkFile = PathHelper.getCacheFilePath(getActivity(), filename);
         progressWheel.setVisibility(View.VISIBLE);
-        Ion.with(this)
-                .load(appVersion.getUpdateUrl())
-                .progress((downloaded, total) -> {
-                    String log = "下载" + (int) (downloaded * 100d / total) + "%";
-                    handler.sendMessage(handler.obtainMessage(0, log));
-                })
-                .write(apkFile)
-                .setCallback((e, file) -> {
-                    if (e == null) {
-                        progressWheel.setVisibility(View.GONE);
-                        status.setText("下载成功，点击安装");
-                        status.setEnabled(true);
-                    } else {
-                        if (apkFile != null) {
-                            apkFile.delete();
-                        }
-                        status.setText("下载失败，点我重来");
-                        status.setEnabled(true);
+
+        DownloadTask task = TaskFactory.createDownloadTask(appVersion.getUpdateUrl(), apkFile.getAbsolutePath());
+        task.run(new ITaskReporter() {
+            @Override
+            public void onTaskStart(ITask task) {
+                String log = "下载: " + 0 + "%";
+                status.setText(log);
+            }
+
+            @Override
+            public void onTaskProgress(ITask task, float percent) {
+                String log = String.format("下载中：%.2f%%", percent);
+                handler.sendMessage(handler.obtainMessage(0, log));
+            }
+
+            @Override
+            public void onTaskCanceled(ITask task) {
+
+            }
+
+            @Override
+            public void onTaskFinish(ITask task) {
+                if (task.getResult() != null) {
+                    progressWheel.setVisibility(View.GONE);
+                    status.setText("下载成功，点击安装");
+                    status.setEnabled(true);
+                } else {
+                    if (apkFile != null) {
+                        apkFile.delete();
                     }
-                });
+                    status.setText("下载失败，点我重来");
+                    status.setEnabled(true);
+                }
+            }
+        });
     }
 
     private void checkUpdate() {
