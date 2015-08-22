@@ -5,9 +5,14 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.yuantiku.siphon.fragment.CheckUpdateFragment;
 import com.yuantiku.siphon.service.WorkService;
 
 import bwzz.activity.BaseActivity;
+import bwzz.activityCallback.LaunchArgument;
+import bwzz.activityReuse.ContainerActivity;
+import bwzz.activityReuse.FragmentPackage;
+import bwzz.activityReuse.ReuseIntentBuilder;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -73,9 +78,25 @@ public class MainActivity extends BaseActivity {
 
         // noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            checkUpdate();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void checkUpdate() {
+        Bundle bundle = new Bundle();
+        FragmentPackage fragmentPackage = new FragmentPackage();
+        fragmentPackage.setContainer(android.R.id.content)
+                .setArgument(bundle)
+                .setFragmentClassName(CheckUpdateFragment.class.getName());
+
+        LaunchArgument argument = ReuseIntentBuilder.build()
+                .activty(ContainerActivity.class)
+                .fragmentPackage(fragmentPackage)
+                .getLaunchArgumentBuiler(this)
+                .requestCode(123)
+                .get();
+        launch(argument);
     }
 }

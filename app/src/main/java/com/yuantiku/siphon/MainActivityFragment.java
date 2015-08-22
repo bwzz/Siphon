@@ -18,11 +18,12 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.yuantiku.siphon.data.FileEntry;
+import com.yuantiku.siphon.helper.ApkHelper;
 import com.yuantiku.siphon.otto.BusFactory;
 import com.yuantiku.siphon.otto.taskevent.SubmitTaskEvent;
 import com.yuantiku.siphon.otto.taskevent.TaskFinishEvent;
 import com.yuantiku.siphon.otto.taskevent.TaskStartEvent;
-import com.yuantiku.siphon.task.DownloadTask;
+import com.yuantiku.siphon.task.DownloadApkTask;
 import com.yuantiku.siphon.task.SyncTask;
 import com.yuantiku.siphon.task.TaskFactory;
 
@@ -70,7 +71,7 @@ public class MainActivityFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
         return view;
@@ -107,11 +108,11 @@ public class MainActivityFragment extends BaseFragment {
             showStatus("同步完成 : " + syncTask.getID());
             FileEntry fileEntry = syncTask.getFileEntries().get(0);
             bus.post(new SubmitTaskEvent(TaskFactory.createDownloadTask(fileEntry)));
-        } else if (task instanceof DownloadTask) {
-            DownloadTask downloadTask = (DownloadTask) task;
-            apkFile = downloadTask.getTargetFile();
+        } else if (task instanceof DownloadApkTask) {
+            DownloadApkTask downloadApkTask = (DownloadApkTask) task;
+            apkFile = downloadApkTask.getTargetFile();
             install.setEnabled(true);
-            showStatus("下载完成 : " + downloadTask.getTargetFile());
+            showStatus("下载完成 : " + downloadApkTask.getTargetFile());
             if (installAuto) {
                 installAuto = false;
                 installApk(apkFile);
@@ -129,9 +130,9 @@ public class MainActivityFragment extends BaseFragment {
         if (task instanceof SyncTask) {
             SyncTask syncTask = (SyncTask) task;
             showStatus("开始同步 : " + syncTask.getID());
-        } else if (task instanceof DownloadTask) {
-            DownloadTask downloadTask = (DownloadTask) task;
-            showStatus("开始下载 : " + downloadTask.getID());
+        } else if (task instanceof DownloadApkTask) {
+            DownloadApkTask downloadApkTask = (DownloadApkTask) task;
+            showStatus("开始下载 : " + downloadApkTask.getID());
         }
     }
 
@@ -141,11 +142,7 @@ public class MainActivityFragment extends BaseFragment {
 
     private void installApk(File apkFile) {
         try {
-            Intent intent = new Intent();
-            intent.setAction(android.content.Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            ApkHelper.installApk(getActivity(), apkFile);
         } catch (Exception e) {
             showStatus("安转失败了，是人品问题。");
         }
