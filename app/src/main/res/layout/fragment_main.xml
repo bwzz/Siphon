@@ -19,8 +19,8 @@
 
         <ImageView
             android:id="@+id/icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
             android:layout_gravity="center"
             android:layout_margin="20dp"
             android:src="@drawable/tutor"/>
@@ -29,6 +29,7 @@
             android:id="@+id/progress_wheel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:visibility="invisible"
             wheel:matProg_barColor="#ff7400"
             wheel:matProg_barWidth="3dp"
