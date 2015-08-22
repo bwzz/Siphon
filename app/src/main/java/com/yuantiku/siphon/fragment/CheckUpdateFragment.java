@@ -162,11 +162,11 @@ public class CheckUpdateFragment extends BaseFragment {
     }
 
     private void finishCheck(CharSequence info, boolean goon) {
+        status.setText(info);
+        status.setEnabled(goon);
         progressWheel.postDelayed(() -> {
             progressWheel.setVisibility(View.INVISIBLE);
             icon.setEnabled(true);
-            status.setText(info);
-            status.setEnabled(goon);
         }, 1000);
 
     }

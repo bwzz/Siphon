@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.yuantiku.siphon.fragment.CheckUpdateFragment;
+import com.yuantiku.siphon.helper.*;
 import com.yuantiku.siphon.service.WorkService;
 
 import bwzz.activity.BaseActivity;
@@ -30,6 +31,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         trustAllHosts();
         startService(new Intent(this, WorkService.class));
+        CheckUpdateHelper.checkUpdateBackgound(this);
     }
 
     public static void trustAllHosts() {
@@ -92,9 +94,9 @@ public class MainActivity extends BaseActivity {
                 .setFragmentClassName(CheckUpdateFragment.class.getName());
 
         LaunchArgument argument = ReuseIntentBuilder.build()
-                .activty(ContainerActivity.class)
+                .activity(ContainerActivity.class)
                 .fragmentPackage(fragmentPackage)
-                .getLaunchArgumentBuiler(this)
+                .getLaunchArgumentBuilder(this)
                 .requestCode(123)
                 .get();
         launch(argument);

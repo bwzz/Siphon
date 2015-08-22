@@ -21,9 +21,12 @@ public class ReuseIntentBuilder {
 
     private LaunchArgument.Builder argumentBuilder = new LaunchArgument.Builder();
 
-    private ReuseIntentBuilder() {}
+    private int flags;
 
-    public ReuseIntentBuilder activty(Class<? extends Activity> activityClass) {
+    private ReuseIntentBuilder() {
+    }
+
+    public ReuseIntentBuilder activity(Class<? extends Activity> activityClass) {
         this.activityClass = activityClass;
         return this;
     }
@@ -33,13 +36,19 @@ public class ReuseIntentBuilder {
         return this;
     }
 
+    public ReuseIntentBuilder flags(int flags) {
+        this.flags = flags;
+        return this;
+    }
+
     public Intent get(Context context) {
         Intent intent = new Intent(context, activityClass);
         intent.putExtra(ReuseConst.fragment_package, fragmentPackage);
+        intent.setFlags(flags);
         return intent;
     }
 
-    public LaunchArgument.Builder getLaunchArgumentBuiler(Context context) {
+    public LaunchArgument.Builder getLaunchArgumentBuilder(Context context) {
         return argumentBuilder.intent(get(context));
     }
 }

@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:visibility="visible"
+            android:visibility="invisible"
             wheel:matProg_barColor="#eccc33"
             wheel:matProg_barWidth="3dp"
             wheel:matProg_circleRadius="80dp"
