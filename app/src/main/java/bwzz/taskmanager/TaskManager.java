@@ -1,5 +1,8 @@
 package bwzz.taskmanager;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -115,7 +118,7 @@ public class TaskManager {
     }
 
     private void finishTask(ITask doneTask) {
-        applyCancel((task) -> task == doneTask, runningTasks);
+        runningTasks.remove(doneTask);
         schedule();
     }
 
@@ -127,27 +130,47 @@ public class TaskManager {
         @Override
         public void onTaskStart(ITask task) {
             if (!task.isCanceled()) {
-                taskReporter.onTaskStart(task);
+                TaskReportHandler handler = task.getTaskReportHandler();
+                if (handler == null) {
+                    taskReporter.onTaskStart(task);
+                } else {
+                    handler.report(taskReporter, TaskReportHandler.What.start, task, 0);
+                }
             }
         }
 
         @Override
         public void onTaskProgress(ITask task, float percent) {
             if (!task.isCanceled()) {
-                taskReporter.onTaskProgress(task, percent);
+                TaskReportHandler handler = task.getTaskReportHandler();
+                if (handler == null) {
+                    taskReporter.onTaskProgress(task, percent);
+                } else {
+                    handler.report(taskReporter, TaskReportHandler.What.progress, task, percent);
+                }
             }
         }
 
         @Override
         public void onTaskCanceled(ITask task) {
-            taskReporter.onTaskCanceled(task);
+            TaskReportHandler handler = task.getTaskReportHandler();
+            if (handler == null) {
+                taskReporter.onTaskCanceled(task);
+            } else {
+                handler.report(taskReporter, TaskReportHandler.What.cancel, task, 0);
+            }
         }
 
         @Override
         public void onTaskFinish(ITask task) {
             if (!task.isCanceled()) {
                 finishTask(task);
-                taskReporter.onTaskFinish(task);
+                TaskReportHandler handler = task.getTaskReportHandler();
+                if (handler == null) {
+                    taskReporter.onTaskFinish(task);
+                } else {
+                    handler.report(taskReporter, TaskReportHandler.What.finish, task, 0);
+                }
             }
         }
     };

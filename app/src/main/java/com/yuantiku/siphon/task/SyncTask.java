@@ -1,5 +1,6 @@
 package com.yuantiku.siphon.task;
 
+import android.os.Looper;
 import android.support.annotation.Nullable;
 
 import com.yuantiku.siphon.data.FileEntry;
@@ -9,6 +10,7 @@ import java.util.List;
 
 import bwzz.taskmanager.AbstractTask;
 import bwzz.taskmanager.ITaskReporter;
+import bwzz.taskmanager.TaskReportHandler;
 import rx.android.schedulers.AndroidSchedulers;
 
 /**
@@ -19,7 +21,11 @@ public class SyncTask extends AbstractTask<List<FileEntry>> {
     private String dir;
 
     SyncTask(String dir) {
-        super(dir);
+        this(dir, new TaskReportHandler(Looper.myLooper()));
+    }
+
+    SyncTask(String dir, TaskReportHandler handler) {
+        super(dir, handler);
         this.dir = dir;
     }
 

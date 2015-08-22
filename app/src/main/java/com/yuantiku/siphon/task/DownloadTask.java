@@ -1,5 +1,6 @@
 package com.yuantiku.siphon.task;
 
+import android.os.Looper;
 import android.support.annotation.Nullable;
 
 import com.koushikdutta.async.future.Future;
@@ -11,6 +12,7 @@ import java.io.File;
 import bwzz.taskmanager.AbstractTask;
 import bwzz.taskmanager.ITaskReporter;
 import bwzz.taskmanager.TaskException;
+import bwzz.taskmanager.TaskReportHandler;
 
 /**
  * Created by wanghb on 15/8/21.
@@ -21,7 +23,11 @@ public class DownloadTask extends AbstractTask<File> {
     private Future<File> future;
 
     public DownloadTask(@Nullable String source, @Nullable String target) {
-        super(source);
+        this(source, target, new TaskReportHandler(Looper.getMainLooper()));
+    }
+
+    public DownloadTask(@Nullable String source, @Nullable String target, TaskReportHandler handler) {
+        super(source, handler);
         this.source = source;
         this.target = target;
     }

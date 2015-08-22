@@ -18,4 +18,6 @@ public interface ITask {
     boolean isCanceled();
 
     void run(@Nullable ITaskReporter taskReporter);
+
+    TaskReportHandler getTaskReportHandler();
 }

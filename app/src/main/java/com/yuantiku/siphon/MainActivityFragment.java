@@ -56,8 +56,6 @@ public class MainActivityFragment extends BaseFragment {
 
     private File apkFile;
 
-    private Handler handler;
-
     @Override
     public void onResume() {
         super.onResume();
@@ -76,10 +74,6 @@ public class MainActivityFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
-        handler = new Handler(msg -> {
-            showStatus((String) msg.obj);
-            return true;
-        });
         return view;
     }
 
@@ -121,7 +115,7 @@ public class MainActivityFragment extends BaseFragment {
 
     @Subscribe
     public void onTaskProgressEvent(TaskProgressEvent taskProgressEvent) {
-        handler.sendMessage(handler.obtainMessage(0, String.format("下载中：%.2f%%", taskProgressEvent.getPercent())));
+        showStatus(String.format("下载中：%.2f%%", taskProgressEvent.getPercent()));
     }
 
     @Subscribe

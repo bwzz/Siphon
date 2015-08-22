@@ -9,10 +9,12 @@ public abstract class AbstractTask<R> implements ITask {
     private boolean isCanceled;
     private R result;
     private TaskException taskException;
+    private TaskReportHandler taskReportHandler;
 
-    public AbstractTask(String id) {
+    public AbstractTask(String id, TaskReportHandler taskReportHandler) {
         this.id = id;
         this.createTime = System.currentTimeMillis();
+        this.taskReportHandler = taskReportHandler;
     }
 
     @Override
@@ -54,5 +56,10 @@ public abstract class AbstractTask<R> implements ITask {
 
     protected void setTaskException(TaskException e) {
         taskException = e;
+    }
+
+    @Override
+    public TaskReportHandler getTaskReportHandler() {
+        return taskReportHandler;
     }
 }
