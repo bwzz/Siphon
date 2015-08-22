@@ -12,4 +12,8 @@ public class TaskProgressEvent extends BaseTaskEvent {
         super(task);
         this.percent = percent;
     }
+
+    public float getPercent() {
+        return percent;
+    }
 }

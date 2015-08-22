@@ -126,12 +126,16 @@ public class TaskManager {
     private ITaskReporter taskReporterWrapper = new ITaskReporter() {
         @Override
         public void onTaskStart(ITask task) {
-            taskReporter.onTaskStart(task);
+            if (!task.isCanceled()) {
+                taskReporter.onTaskStart(task);
+            }
         }
 
         @Override
         public void onTaskProgress(ITask task, float percent) {
-            taskReporter.onTaskProgress(task, percent);
+            if (!task.isCanceled()) {
+                taskReporter.onTaskProgress(task, percent);
+            }
         }
 
         @Override
@@ -141,8 +145,10 @@ public class TaskManager {
 
         @Override
         public void onTaskFinish(ITask task) {
-            finishTask(task);
-            taskReporter.onTaskFinish(task);
+            if (!task.isCanceled()) {
+                finishTask(task);
+                taskReporter.onTaskFinish(task);
+            }
         }
     };
 

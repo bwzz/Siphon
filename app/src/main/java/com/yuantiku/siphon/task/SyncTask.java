@@ -14,9 +14,7 @@ import rx.android.schedulers.AndroidSchedulers;
 /**
  * Created by wanghb on 15/8/20.
  */
-public class SyncTask extends AbstractTask {
-
-    private List<FileEntry> fileEntries;
+public class SyncTask extends AbstractTask<List<FileEntry>> {
 
     private String dir;
 
@@ -25,17 +23,13 @@ public class SyncTask extends AbstractTask {
         this.dir = dir;
     }
 
-    public List<FileEntry> getFileEntries() {
-        return fileEntries;
-    }
-
     @Override
     public void run(@Nullable ITaskReporter taskReporter) {
         ServiceFactory.createZhenguanyuService()
                 .listFiles(dir)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((list) -> {
-                    fileEntries = list;
+                    setResult(list);
                     reportTaskFinish(taskReporter);
                 }, (error) -> {
                     reportTaskFinish(taskReporter);

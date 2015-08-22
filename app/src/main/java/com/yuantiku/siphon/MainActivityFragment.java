@@ -1,18 +1,11 @@
 package com.yuantiku.siphon;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import bwzz.fragment.BaseFragment;
-import bwzz.taskmanager.ITask;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Bus;
@@ -22,12 +15,19 @@ import com.yuantiku.siphon.helper.ApkHelper;
 import com.yuantiku.siphon.otto.BusFactory;
 import com.yuantiku.siphon.otto.taskevent.SubmitTaskEvent;
 import com.yuantiku.siphon.otto.taskevent.TaskFinishEvent;
+import com.yuantiku.siphon.otto.taskevent.TaskProgressEvent;
 import com.yuantiku.siphon.otto.taskevent.TaskStartEvent;
 import com.yuantiku.siphon.task.DownloadApkTask;
 import com.yuantiku.siphon.task.SyncTask;
 import com.yuantiku.siphon.task.TaskFactory;
 
 import java.io.File;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import bwzz.fragment.BaseFragment;
+import bwzz.taskmanager.ITask;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -56,6 +56,8 @@ public class MainActivityFragment extends BaseFragment {
 
     private File apkFile;
 
+    private Handler handler;
+
     @Override
     public void onResume() {
         super.onResume();
@@ -74,6 +76,10 @@ public class MainActivityFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
+        handler = new Handler(msg -> {
+            showStatus((String) msg.obj);
+            return true;
+        });
         return view;
     }
 
@@ -100,29 +106,6 @@ public class MainActivityFragment extends BaseFragment {
         }
     }
 
-    @Subscribe
-    public void onTaskFinishEvent(TaskFinishEvent taskFinishEvent) {
-        ITask task = taskFinishEvent.getTask();
-        if (task instanceof SyncTask) {
-            SyncTask syncTask = (SyncTask) task;
-            showStatus("同步完成 : " + syncTask.getID());
-            FileEntry fileEntry = syncTask.getFileEntries().get(0);
-            bus.post(new SubmitTaskEvent(TaskFactory.createDownloadTask(fileEntry)));
-        } else if (task instanceof DownloadApkTask) {
-            DownloadApkTask downloadApkTask = (DownloadApkTask) task;
-            apkFile = downloadApkTask.getTargetFile();
-            install.setEnabled(true);
-            showStatus("下载完成 : " + downloadApkTask.getTargetFile());
-            if (installAuto) {
-                installAuto = false;
-                installApk(apkFile);
-            }
-            sync.setEnabled(true);
-            install.setEnabled(true);
-            syncInstall.setEnabled(true);
-            progressWheel.setVisibility(View.INVISIBLE);
-        }
-    }
 
     @Subscribe
     public void onTaskStartEvent(TaskStartEvent taskStartEvent) {
@@ -133,6 +116,35 @@ public class MainActivityFragment extends BaseFragment {
         } else if (task instanceof DownloadApkTask) {
             DownloadApkTask downloadApkTask = (DownloadApkTask) task;
             showStatus("开始下载 : " + downloadApkTask.getID());
+        }
+    }
+
+    @Subscribe
+    public void onTaskProgressEvent(TaskProgressEvent taskProgressEvent) {
+        handler.sendMessage(handler.obtainMessage(0, String.format("下载中：%.2f%%", taskProgressEvent.getPercent())));
+    }
+
+    @Subscribe
+    public void onTaskFinishEvent(TaskFinishEvent taskFinishEvent) {
+        ITask task = taskFinishEvent.getTask();
+        if (task instanceof SyncTask) {
+            SyncTask syncTask = (SyncTask) task;
+            showStatus("同步完成 : " + syncTask.getID());
+            FileEntry fileEntry = syncTask.getResult().get(0);
+            bus.post(new SubmitTaskEvent(TaskFactory.createDownloadTask(fileEntry)));
+        } else if (task instanceof DownloadApkTask) {
+            DownloadApkTask downloadApkTask = (DownloadApkTask) task;
+            apkFile = downloadApkTask.getResult();
+            install.setEnabled(true);
+            showStatus("下载完成 : " + downloadApkTask.getResult());
+            if (installAuto) {
+                installAuto = false;
+                installApk(apkFile);
+            }
+            sync.setEnabled(true);
+            install.setEnabled(true);
+            syncInstall.setEnabled(true);
+            progressWheel.setVisibility(View.INVISIBLE);
         }
     }
 

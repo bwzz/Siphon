@@ -1,14 +1,14 @@
 package bwzz.taskmanager;
 
-import android.support.annotation.Nullable;
-
 /**
  * Created by wanghb on 15/8/20.
  */
-public abstract class AbstractTask implements ITask {
+public abstract class AbstractTask<R> implements ITask {
     private String id;
     private long createTime;
     private boolean isCanceled;
+    private R result;
+    private TaskException taskException;
 
     public AbstractTask(String id) {
         this.id = id;
@@ -40,4 +40,19 @@ public abstract class AbstractTask implements ITask {
         return isCanceled;
     }
 
+    public R getResult() {
+        return result;
+    }
+
+    protected void setResult(R result) {
+        this.result = result;
+    }
+
+    public TaskException getTaskException() {
+        return taskException;
+    }
+
+    protected void setTaskException(TaskException e) {
+        taskException = e;
+    }
 }

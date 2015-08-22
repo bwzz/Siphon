@@ -2,6 +2,7 @@ package com.yuantiku.siphon.webservice;
 
 import com.yuantiku.siphon.data.FileConverter;
 import com.yuantiku.siphon.data.HtmlToFileEntriesConverter;
+import com.yuantiku.siphon.helper.ZhenguanyuPathHelper;
 
 import retrofit.RestAdapter;
 import retrofit.RestAdapter.LogLevel;
@@ -11,7 +12,7 @@ import retrofit.RestAdapter.LogLevel;
  * @date 15/8/15.
  */
 public class ServiceFactory {
-    private final static String EndPoint = "https://app.zhenguanyu.com";
+    private final static String EndPoint = ZhenguanyuPathHelper.getEndpoint();
 
     public static ZhenguanyuService createZhenguanyuService() {
         RestAdapter restAdapter = new RestAdapter.Builder()
