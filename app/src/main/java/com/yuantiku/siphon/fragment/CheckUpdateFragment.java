@@ -8,10 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.yuantiku.siphon.R;
+import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.helper.ApkHelper;
 import com.yuantiku.siphon.helper.AppHelper;
+import com.yuantiku.siphon.helper.CheckUpdateHelper;
 import com.yuantiku.siphon.helper.PathHelper;
 import com.yuantiku.siphon.task.DownloadTask;
 import com.yuantiku.siphon.task.TaskFactory;
@@ -24,8 +27,6 @@ import butterknife.OnClick;
 import bwzz.fragment.BaseFragment;
 import bwzz.taskmanager.ITask;
 import bwzz.taskmanager.ITaskReporter;
-import im.fir.sdk.FIR;
-import im.fir.sdk.callback.VersionCheckCallback;
 import im.fir.sdk.version.AppVersion;
 
 /**
@@ -37,6 +38,8 @@ public class CheckUpdateFragment extends BaseFragment {
 
     @Bind(R.id.progress_wheel)
     ProgressWheel progressWheel;
+    @Bind(R.id.icon)
+    View icon;
 
     private AppVersion appVersion;
 
@@ -56,16 +59,21 @@ public class CheckUpdateFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        checkUpdate();
+        if (getArguments() != null) {
+            Gson gson = new Gson();
+            String appVersionStr = getArguments().getString(Key.AppVersion);
+            appVersion = gson.fromJson(appVersionStr, AppVersion.class);
+        }
+        if (appVersion == null) {
+            checkUpdate();
+        } else {
+            showNewVersion(appVersion);
+        }
+
         handler = new Handler((message) -> {
             status.setText(String.valueOf(message.obj));
             return true;
         });
-    }
-
-    @OnClick(R.id.icon)
-    public void checkUpdate(View view) {
-        checkUpdate();
     }
 
     @OnClick(R.id.status)
@@ -116,43 +124,50 @@ public class CheckUpdateFragment extends BaseFragment {
         });
     }
 
-    private void checkUpdate() {
+    @OnClick(R.id.icon)
+    public void checkUpdate() {
+        progressWheel.setVisibility(View.VISIBLE);
         status.setEnabled(false);
-        FIR.checkForUpdateInFIR("24f1dc375cf795bf73d26d57fc73d17d", new VersionCheckCallback() {
+        icon.setEnabled(false);
+        status.setText("正在检查更新...");
+        CheckUpdateHelper.checkUpdate(new CheckUpdateHelper.CheckUpdateCallback() {
             @Override
-            public void onSuccess(AppVersion appVersion, boolean b) {
+            public void onNewVersion(AppVersion appVersion) {
                 CheckUpdateFragment.this.appVersion = appVersion;
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(appVersion.getVersionName());
-                stringBuilder.append("\n");
-                stringBuilder.append(appVersion.getChangeLog());
-                if (AppHelper.getVersionCode(getActivity()) <= appVersion.getVersionCode()) {
-                    stringBuilder.append("\n");
-                    stringBuilder.append("点我更新");
-                }
-                status.setText(stringBuilder);
-                status.setEnabled(true);
+                showNewVersion(appVersion);
             }
 
+
             @Override
-            public void onFail(String s, int i) {
-                status.setText(s);
+            public void onNoNewVersion(AppVersion appVersion) {
+                finishCheck("你已经装得最新了~" + appVersion.getVersionName(), false);
             }
 
             @Override
             public void onError(Exception e) {
-                status.setText(e.getMessage());
+                finishCheck("orz，失败了，点上面的图标重试", false);
             }
 
-            @Override
-            public void onStart() {
-                progressWheel.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onFinish() {
-                progressWheel.postDelayed(() -> progressWheel.setVisibility(View.INVISIBLE), 1000);
-            }
         });
+    }
+
+    private void showNewVersion(AppVersion appVersion) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(appVersion.getVersionName());
+        stringBuilder.append("\n");
+        stringBuilder.append(appVersion.getChangeLog());
+        stringBuilder.append("\n");
+        stringBuilder.append("点我更新");
+        finishCheck(stringBuilder, true);
+    }
+
+    private void finishCheck(CharSequence info, boolean goon) {
+        progressWheel.postDelayed(() -> {
+            progressWheel.setVisibility(View.INVISIBLE);
+            icon.setEnabled(true);
+            status.setText(info);
+            status.setEnabled(goon);
+        }, 1000);
+
     }
 }
