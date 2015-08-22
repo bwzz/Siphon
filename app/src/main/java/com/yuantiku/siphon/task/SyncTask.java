@@ -8,9 +8,7 @@ import com.yuantiku.siphon.webservice.ServiceFactory;
 
 import java.util.List;
 
-import bwzz.taskmanager.AbstractTask;
-import bwzz.taskmanager.ITaskReporter;
-import bwzz.taskmanager.TaskReportHandler;
+import bwzz.taskmanager.*;
 import rx.android.schedulers.AndroidSchedulers;
 
 /**
@@ -38,6 +36,7 @@ public class SyncTask extends AbstractTask<List<FileEntry>> {
                     setResult(list);
                     reportTaskFinish(taskReporter);
                 }, (error) -> {
+                    setTaskException(TaskException.wrap(error));
                     reportTaskFinish(taskReporter);
                 });
         taskReporter.onTaskStart(this);

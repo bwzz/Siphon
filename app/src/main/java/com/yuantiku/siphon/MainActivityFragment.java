@@ -1,7 +1,6 @@
 package com.yuantiku.siphon;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,7 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.yuantiku.siphon.data.FileEntry;
-import com.yuantiku.siphon.helper.ApkHelper;
+import com.yuantiku.siphon.helper.*;
 import com.yuantiku.siphon.otto.BusFactory;
 import com.yuantiku.siphon.otto.taskevent.SubmitTaskEvent;
 import com.yuantiku.siphon.otto.taskevent.TaskFinishEvent;
@@ -36,11 +35,11 @@ public class MainActivityFragment extends BaseFragment {
     @Bind(R.id.sync)
     View sync;
 
-    @Bind(R.id.sync_install)
-    View syncInstall;
+    @Bind(R.id.one_step)
+    View oneStep;
 
-    @Bind(R.id.install)
-    View install;
+    @Bind(R.id.download_install)
+    View downloadInstall;
 
     @Bind(R.id.status)
     TextView status;
@@ -60,7 +59,10 @@ public class MainActivityFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         bus.register(this);
-        install.setEnabled(apkFile != null && apkFile.exists());
+        setViewStatus(true);
+        if (fileEntry != null) {
+            showStatus("上次检测到：" + fileEntry.name + "\n" + fileEntry.date);
+        }
     }
 
     @Override
@@ -71,35 +73,36 @@ public class MainActivityFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
 
-    @OnClick(R.id.sync_install)
-    public void syncInstall(View view) {
+    @OnClick(R.id.one_step)
+    public void oneStep() {
+        sync();
         installAuto = true;
-        sync(sync);
     }
 
     @OnClick(R.id.sync)
-    public void sync(View view) {
+    public void sync() {
+        installAuto = false;
         bus.post(new SubmitTaskEvent(TaskFactory.createSyncTask("android/102/alpha")));
-        view.setEnabled(false);
-        syncInstall.setEnabled(false);
-        progressWheel.setVisibility(View.VISIBLE);
+        setViewStatus(false);
     }
 
-    @OnClick(R.id.install)
-    public void install(View view) {
+    @OnClick(R.id.download_install)
+    public void downloadInstall() {
         if (apkFile != null && apkFile.exists()) {
             installApk(apkFile);
+        } else if (fileEntry != null) {
+            bus.post(new SubmitTaskEvent(TaskFactory.createDownloadTask(fileEntry)));
+            setViewStatus(false);
         } else {
             showStatus("先同步下吧");
         }
     }
-
 
     @Subscribe
     public void onTaskStartEvent(TaskStartEvent taskStartEvent) {
@@ -115,31 +118,59 @@ public class MainActivityFragment extends BaseFragment {
 
     @Subscribe
     public void onTaskProgressEvent(TaskProgressEvent taskProgressEvent) {
-        showStatus(String.format("下载中：%.2f%%", taskProgressEvent.getPercent()));
+        showStatus(String.format("下载中：%.2f%%\n%s", taskProgressEvent.getPercent(), fileEntry.name));
     }
 
     @Subscribe
     public void onTaskFinishEvent(TaskFinishEvent taskFinishEvent) {
         ITask task = taskFinishEvent.getTask();
+        if (task.getTaskException() != null) {
+            setViewStatus(true);
+            showStatus("请求失败\n" + task.getTaskException().getMessage());
+            return;
+        }
         if (task instanceof SyncTask) {
             SyncTask syncTask = (SyncTask) task;
-            showStatus("同步完成 : " + syncTask.getID());
-            FileEntry fileEntry = syncTask.getResult().get(0);
-            bus.post(new SubmitTaskEvent(TaskFactory.createDownloadTask(fileEntry)));
+            showStatus(String.format("同步完成 : " + syncTask.getID()));
+            if (syncTask.getResult() == null || syncTask.getResult().isEmpty()) {
+                showStatus("没有发现安装包");
+                setViewStatus(true);
+            } else {
+                fileEntry = syncTask.getResult().get(0);
+                showStatus(String.format("同步完成 : %s\n%s\n%s", syncTask.getID(), fileEntry.name,
+                        fileEntry.date));
+                File file = new File(ZhenguanyuPathHelper.createCachePath(fileEntry));
+                if (file.exists()) {
+                    apkFile = file;
+                } else {
+                    apkFile = null;
+                }
+
+                if (installAuto) {
+                    if (apkFile == null) {
+                        bus.post(new SubmitTaskEvent(TaskFactory.createDownloadTask(fileEntry)));
+                    } else {
+                        setViewStatus(true);
+                        installApk(apkFile);
+                    }
+                } else {
+                    setViewStatus(true);
+                }
+            }
         } else if (task instanceof DownloadApkTask) {
             DownloadApkTask downloadApkTask = (DownloadApkTask) task;
             apkFile = downloadApkTask.getResult();
-            install.setEnabled(true);
+            setViewStatus(true);
             showStatus("下载完成 : " + downloadApkTask.getResult());
-            if (installAuto) {
-                installAuto = false;
-                installApk(apkFile);
-            }
-            sync.setEnabled(true);
-            install.setEnabled(true);
-            syncInstall.setEnabled(true);
-            progressWheel.setVisibility(View.INVISIBLE);
+            installApk(apkFile);
         }
+    }
+
+    private void setViewStatus(boolean free) {
+        downloadInstall.setEnabled(fileEntry != null && free);
+        sync.setEnabled(free);
+        oneStep.setEnabled(free);
+        progressWheel.setVisibility(free ? View.INVISIBLE : View.VISIBLE);
     }
 
     private void showStatus(String status) {

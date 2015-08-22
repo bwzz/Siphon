@@ -33,7 +33,8 @@ public class CheckUpdateHelper {
                 if (checkUpdateCallback == null) {
                     return;
                 }
-                if (AppHelper.getVersionCode(ApplicationFactory.getApplication()) <= appVersion.getVersionCode()) {
+                if (AppHelper.getVersionCode(ApplicationFactory.getApplication()) < appVersion
+                        .getVersionCode()) {
                     checkUpdateCallback.onNewVersion(appVersion);
                 } else {
                     checkUpdateCallback.onNoNewVersion(appVersion);
@@ -55,12 +56,10 @@ public class CheckUpdateHelper {
             }
 
             @Override
-            public void onStart() {
-            }
+            public void onStart() {}
 
             @Override
-            public void onFinish() {
-            }
+            public void onFinish() {}
         });
     }
 }

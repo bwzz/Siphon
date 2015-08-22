@@ -47,10 +47,14 @@ public class DownloadTask extends AbstractTask<File> {
                 .with(ApplicationFactory.getApplication())
                 .load(source)
                 .setLogging("DownloadTask", Log.DEBUG)
-                .progress((downloaded, total) -> taskReporter.onTaskProgress(this, (float) (downloaded * 100d / total)))
+                .progress(
+                        (downloaded, total) -> taskReporter.onTaskProgress(this,
+                                (float) (downloaded * 100d / total)))
                 .write(new File(target))
                 .setCallback((e, result) -> {
-                    setTaskException(TaskException.wrap(e));
+                    if (e != null) {
+                        setTaskException(TaskException.wrap(e));
+                    }
                     setResult(result);
                     taskReporter.onTaskFinish(this);
                 });

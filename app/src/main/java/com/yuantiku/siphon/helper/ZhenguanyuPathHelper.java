@@ -2,6 +2,7 @@ package com.yuantiku.siphon.helper;
 
 import android.os.Environment;
 
+import com.yuantiku.siphon.app.*;
 import com.yuantiku.siphon.data.FileEntry;
 
 import java.io.File;
@@ -21,7 +22,8 @@ public class ZhenguanyuPathHelper {
     }
 
     public static String createCachePath(FileEntry fileEntry) {
-        String targetFilePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileEntry.name).getAbsolutePath();
+        String targetFilePath = new File(ApplicationFactory.getApplication().getExternalCacheDir(),
+                fileEntry.name).getAbsolutePath();
         return targetFilePath;
 
     }

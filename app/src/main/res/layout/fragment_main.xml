@@ -54,14 +54,14 @@
         android:text="同步"/>
 
     <Button
-        android:id="@+id/install"
+        android:id="@+id/download_install"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="安装"/>
+        android:text="下载安装"/>
 
     <Button
-        android:id="@+id/sync_install"
+        android:id="@+id/one_step"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="同步 + 安装"/>
+        android:text="一步到位"/>
 </LinearLayout>
