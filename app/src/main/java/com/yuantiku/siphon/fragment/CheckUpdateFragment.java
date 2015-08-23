@@ -84,11 +84,13 @@ public class CheckUpdateFragment extends BaseFragment {
         }
         status.setEnabled(false);
         L.e("download " + appVersion.getUpdateUrl());
-        String filename = String.format("%s-%s.apk", AppHelper.getAppName(getActivity()), appVersion.getVersionName());
+        String filename = String.format("%s-%s.apk", AppHelper.getAppName(getActivity()),
+                appVersion.getVersionName());
         apkFile = PathHelper.getCacheFilePath(getActivity(), filename);
         progressWheel.setVisibility(View.VISIBLE);
 
-        DownloadTask task = TaskFactory.createDownloadTask(appVersion.getUpdateUrl(), apkFile.getAbsolutePath());
+        DownloadTask task = TaskFactory.createDownloadTask(appVersion.getUpdateUrl(),
+                apkFile.getAbsolutePath());
         task.run(new ITaskReporter() {
             @Override
             public void onTaskStart(ITask task) {
@@ -137,7 +139,6 @@ public class CheckUpdateFragment extends BaseFragment {
                 showNewVersion(appVersion);
             }
 
-
             @Override
             public void onNoNewVersion(AppVersion appVersion) {
                 finishCheck("你已经装得最新了~" + appVersion.getVersionName(), false);
@@ -170,4 +171,5 @@ public class CheckUpdateFragment extends BaseFragment {
         }, 1000);
 
     }
+
 }

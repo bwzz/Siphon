@@ -1,17 +1,26 @@
-package com.yuantiku.siphon;
+package com.yuantiku.siphon.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import com.yuantiku.siphon.apkconfigs.*;
+import com.yuantiku.siphon.R;
+import com.yuantiku.siphon.apkconfigs.ApkConfig;
+import com.yuantiku.siphon.apkconfigs.ApkConfigFactory;
+import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.data.FileEntry;
-import com.yuantiku.siphon.helper.*;
+import com.yuantiku.siphon.helper.ApkHelper;
+import com.yuantiku.siphon.helper.ZhenguanyuPathHelper;
 import com.yuantiku.siphon.otto.BusFactory;
 import com.yuantiku.siphon.otto.taskevent.SubmitTaskEvent;
 import com.yuantiku.siphon.otto.taskevent.TaskFinishEvent;
@@ -21,11 +30,15 @@ import com.yuantiku.siphon.task.DownloadApkTask;
 import com.yuantiku.siphon.task.SyncTask;
 import com.yuantiku.siphon.task.TaskFactory;
 
-import java.io.*;
+import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import bwzz.activityCallback.LaunchArgument;
+import bwzz.activityReuse.ContainerActivity;
+import bwzz.activityReuse.FragmentPackage;
+import bwzz.activityReuse.ReuseIntentBuilder;
 import bwzz.fragment.BaseFragment;
 import bwzz.taskmanager.ITask;
 
@@ -59,19 +72,85 @@ public class MainActivityFragment extends BaseFragment {
     private ApkConfig apkConfig = ApkConfigFactory.getDefault();
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_check_update:
+                checkUpdate();
+                break;
+            case R.id.action_select_apk:
+                selectApplication();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void selectApplication() {
+        Bundle bundle = new Bundle();
+        FragmentPackage fragmentPackage = new FragmentPackage();
+        fragmentPackage.setContainer(android.R.id.content)
+                .setArgument(bundle)
+                .setFragmentClassName(AppListFragment.class.getName());
+
+        LaunchArgument argument = ReuseIntentBuilder.build()
+                .activity(ContainerActivity.class)
+                .fragmentPackage(fragmentPackage)
+                .getLaunchArgumentBuilder(getActivity())
+                .requestCode(123)
+                .callback((resultCode, data) -> {
+                    if (resultCode == Activity.RESULT_OK) {
+                        String acs = data.getStringExtra(Key.ApkConfig);
+                        Gson gson = new Gson();
+                        setApkConfig(gson.fromJson(acs, ApkConfig.class));
+                        sync();
+                    }
+                    return true;
+                })
+                .get();
+        launch(argument);
+    }
+
+    private void checkUpdate() {
+        Bundle bundle = new Bundle();
+        FragmentPackage fragmentPackage = new FragmentPackage();
+        fragmentPackage.setContainer(android.R.id.content)
+                .setArgument(bundle)
+                .setFragmentClassName(CheckUpdateFragment.class.getName());
+
+        LaunchArgument argument = ReuseIntentBuilder.build()
+                .activity(ContainerActivity.class)
+                .fragmentPackage(fragmentPackage)
+                .getLaunchArgumentBuilder(getActivity())
+                .get();
+        launch(argument);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         bus.register(this);
         setViewStatus(true);
-        try {
-            apkConfig = ApkConfigFactory.load().get(0);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        showStatus(apkConfig.getName());
+        setApkConfig(apkConfig);
         if (fileEntry != null) {
             showStatus("上次检测到：" + fileEntry.name + "\n" + fileEntry.date);
         }
+    }
+
+    private void setApkConfig(ApkConfig apkConfig) {
+        this.apkConfig = apkConfig;
+        showStatus(apkConfig.getName() + apkConfig.getType());
     }
 
     @Override
@@ -118,16 +197,18 @@ public class MainActivityFragment extends BaseFragment {
         ITask task = taskStartEvent.getTask();
         if (task instanceof SyncTask) {
             SyncTask syncTask = (SyncTask) task;
-            showStatus("开始同步 : " + syncTask.getID());
+            showStatus("开始同步 : " + apkConfig.getName() + apkConfig.getType());
         } else if (task instanceof DownloadApkTask) {
             DownloadApkTask downloadApkTask = (DownloadApkTask) task;
-            showStatus("开始下载 : " + downloadApkTask.getID());
+            showStatus("开始下载 : " + apkConfig.getName() + apkConfig.getType() + "\n"
+                    + downloadApkTask.getID());
         }
     }
 
     @Subscribe
     public void onTaskProgressEvent(TaskProgressEvent taskProgressEvent) {
-        showStatus(String.format("下载中：%.2f%%\n%s", taskProgressEvent.getPercent(), fileEntry.name));
+        showStatus(String.format("%s\n下载中：%.2f%%\n%s", apkConfig.getName() + apkConfig.getType(),
+                taskProgressEvent.getPercent(), fileEntry.name));
     }
 
     @Subscribe
@@ -140,13 +221,14 @@ public class MainActivityFragment extends BaseFragment {
         }
         if (task instanceof SyncTask) {
             SyncTask syncTask = (SyncTask) task;
-            showStatus(String.format("同步完成 : " + syncTask.getID()));
+            showStatus(String.format("同步完成 : " + apkConfig.getName() + apkConfig.getType()));
             if (syncTask.getResult() == null || syncTask.getResult().isEmpty()) {
                 showStatus("没有发现安装包");
                 setViewStatus(true);
             } else {
                 fileEntry = syncTask.getResult().get(0);
-                showStatus(String.format("同步完成 : %s\n%s\n%s", syncTask.getID(), fileEntry.name,
+                showStatus(String.format("同步完成 : %s\n%s\n%s",
+                        apkConfig.getName() + apkConfig.getType(), fileEntry.name,
                         fileEntry.date));
                 File file = new File(ZhenguanyuPathHelper.createCachePath(fileEntry));
                 if (file.exists()) {
@@ -170,7 +252,8 @@ public class MainActivityFragment extends BaseFragment {
             DownloadApkTask downloadApkTask = (DownloadApkTask) task;
             apkFile = downloadApkTask.getResult();
             setViewStatus(true);
-            showStatus("下载完成 : " + downloadApkTask.getResult());
+            showStatus("下载完成 : " + apkConfig.getName() + apkConfig.getType() + "\n"
+                    + downloadApkTask.getResult());
             installApk(apkFile);
         }
     }
@@ -193,5 +276,4 @@ public class MainActivityFragment extends BaseFragment {
             showStatus("安转失败了，是人品问题。");
         }
     }
-
 }

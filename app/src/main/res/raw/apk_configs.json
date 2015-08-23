@@ -3,5 +3,60 @@
     "id": 102,
     "name": "猿辅导",
     "type": "alpha"
+  },
+  {
+    "id": 102,
+    "name": "猿辅导",
+    "type": "beta"
+  },
+  {
+    "id": 102,
+    "name": "猿辅导",
+    "type": "release"
+  },
+  {
+    "id": 103,
+    "name": "猿辅导老师版",
+    "type": "alpha"
+  },
+  {
+    "id": 103,
+    "name": "猿辅导老师版",
+    "type": "beta"
+  },
+  {
+    "id": 103,
+    "name": "猿辅导老师版",
+    "type": "release"
+  },
+  {
+    "id": 42,
+    "name": "猿题库",
+    "type": "alpha"
+  },
+  {
+    "id": 42,
+    "name": "猿题库",
+    "type": "beta"
+  },
+  {
+    "id": 42,
+    "name": "猿题库",
+    "type": "release"
+  },
+  {
+    "id": 100,
+    "name": "小猿搜题",
+    "type": "alpha"
+  },
+  {
+    "id": 100,
+    "name": "小猿搜题",
+    "type": "beta"
+  },
+  {
+    "id": 100,
+    "name": "小猿搜题",
+    "type": "release"
   }
 ]

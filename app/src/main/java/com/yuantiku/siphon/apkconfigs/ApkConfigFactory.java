@@ -1,16 +1,18 @@
 package com.yuantiku.siphon.apkconfigs;
 
-import android.content.*;
+import android.content.Context;
 
-import com.google.gson.*;
-import com.google.gson.reflect.*;
-import com.yuantiku.siphon.*;
-import com.yuantiku.siphon.app.*;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.yuantiku.siphon.R;
+import com.yuantiku.siphon.app.ApplicationFactory;
 
-import org.apache.commons.io.*;
+import org.apache.commons.io.IOUtils;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by wanghb on 15/8/23.
