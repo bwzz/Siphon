@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+import com.yuantiku.siphon.apkconfigs.*;
 import com.yuantiku.siphon.data.FileEntry;
 import com.yuantiku.siphon.helper.*;
 import com.yuantiku.siphon.otto.BusFactory;
@@ -20,7 +21,7 @@ import com.yuantiku.siphon.task.DownloadApkTask;
 import com.yuantiku.siphon.task.SyncTask;
 import com.yuantiku.siphon.task.TaskFactory;
 
-import java.io.File;
+import java.io.*;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -55,11 +56,19 @@ public class MainActivityFragment extends BaseFragment {
 
     private File apkFile;
 
+    private ApkConfig apkConfig = ApkConfigFactory.getDefault();
+
     @Override
     public void onResume() {
         super.onResume();
         bus.register(this);
         setViewStatus(true);
+        try {
+            apkConfig = ApkConfigFactory.load().get(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        showStatus(apkConfig.getName());
         if (fileEntry != null) {
             showStatus("上次检测到：" + fileEntry.name + "\n" + fileEntry.date);
         }
@@ -88,7 +97,7 @@ public class MainActivityFragment extends BaseFragment {
     @OnClick(R.id.sync)
     public void sync() {
         installAuto = false;
-        bus.post(new SubmitTaskEvent(TaskFactory.createSyncTask("android/102/alpha")));
+        bus.post(new SubmitTaskEvent(TaskFactory.createSyncTask(apkConfig.getListPath())));
         setViewStatus(false);
     }
 

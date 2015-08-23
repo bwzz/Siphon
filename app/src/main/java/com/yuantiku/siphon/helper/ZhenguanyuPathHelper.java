@@ -18,7 +18,7 @@ public class ZhenguanyuPathHelper {
     }
 
     public static String create(FileEntry fileEntry) {
-        return getEndpoint() + "/list?dir=android/102/alpha/" + fileEntry.name;
+        return getEndpoint() + fileEntry.href;
     }
 
     public static String createCachePath(FileEntry fileEntry) {
