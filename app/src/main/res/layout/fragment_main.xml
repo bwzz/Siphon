@@ -43,7 +43,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ellipsize="start"
-        android:lines="3"
+        android:maxLines="5"
+        android:minLines="3"
         android:padding="10dp"
         android:text="猿辅导"
         android:textSize="16sp"/>

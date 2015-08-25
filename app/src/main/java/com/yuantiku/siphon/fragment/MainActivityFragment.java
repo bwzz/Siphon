@@ -8,9 +8,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import bwzz.activityCallback.LaunchArgument;
+import bwzz.activityReuse.ContainerActivity;
+import bwzz.activityReuse.FragmentPackage;
+import bwzz.activityReuse.ReuseIntentBuilder;
+import bwzz.fragment.BaseFragment;
+import bwzz.taskmanager.ITask;
+
 import com.google.gson.Gson;
+import com.koushikdutta.ion.Ion;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -32,16 +44,6 @@ import com.yuantiku.siphon.task.TaskFactory;
 
 import java.io.File;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import bwzz.activityCallback.LaunchArgument;
-import bwzz.activityReuse.ContainerActivity;
-import bwzz.activityReuse.FragmentPackage;
-import bwzz.activityReuse.ReuseIntentBuilder;
-import bwzz.fragment.BaseFragment;
-import bwzz.taskmanager.ITask;
-
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -60,6 +62,9 @@ public class MainActivityFragment extends BaseFragment {
 
     @Bind(R.id.progress_wheel)
     ProgressWheel progressWheel;
+
+    @Bind(R.id.icon)
+    ImageView icon;
 
     private Bus bus = BusFactory.getBus();
 
@@ -113,8 +118,7 @@ public class MainActivityFragment extends BaseFragment {
                     if (resultCode == Activity.RESULT_OK) {
                         String acs = data.getStringExtra(Key.ApkConfig);
                         Gson gson = new Gson();
-                        setApkConfig(gson.fromJson(acs, ApkConfig.class));
-                        sync();
+                        updateApkConfig(gson.fromJson(acs, ApkConfig.class));
                     }
                     return true;
                 })
@@ -142,15 +146,17 @@ public class MainActivityFragment extends BaseFragment {
         super.onResume();
         bus.register(this);
         setViewStatus(true);
-        setApkConfig(apkConfig);
+        updateApkConfig(apkConfig);
         if (fileEntry != null) {
             showStatus("上次检测到：" + fileEntry.name + "\n" + fileEntry.date);
         }
     }
 
-    private void setApkConfig(ApkConfig apkConfig) {
+    private void updateApkConfig(ApkConfig apkConfig) {
         this.apkConfig = apkConfig;
         showStatus(apkConfig.getName() + apkConfig.getType());
+        Ion.with(icon).load(apkConfig.getIcon());
+        sync();
     }
 
     @Override

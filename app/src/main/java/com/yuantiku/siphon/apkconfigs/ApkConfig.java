@@ -7,6 +7,7 @@ public class ApkConfig {
     int id;
     String name;
     ApkType type;
+    String icon;
 
     public int getId() {
         return id;
@@ -22,5 +23,9 @@ public class ApkConfig {
 
     public String getListPath() {
         return String.format("android/%d/%s", id, type.name());
+    }
+
+    public String getIcon() {
+        return icon;
     }
 }

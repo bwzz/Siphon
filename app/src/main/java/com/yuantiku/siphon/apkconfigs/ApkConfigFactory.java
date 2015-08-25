@@ -7,12 +7,12 @@ import com.google.gson.reflect.TypeToken;
 import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.app.ApplicationFactory;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * Created by wanghb on 15/8/23.
@@ -32,14 +32,16 @@ public class ApkConfigFactory {
     }
 
     public static ApkConfig getDefault() {
-        return getConfig(102, "猿辅导", ApkType.alpha);
-    }
-
-    public static ApkConfig getConfig(int id, String name, ApkType type) {
+        try {
+            return load().get(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         ApkConfig apkConfig = new ApkConfig();
-        apkConfig.id = id;
-        apkConfig.name = name;
-        apkConfig.type = type;
+        apkConfig.id = 102;
+        apkConfig.name = "猿辅导";
+        apkConfig.type = ApkType.alpha;
+        apkConfig.icon = "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHItk3FXda*g4/800";
         return apkConfig;
     }
 }
