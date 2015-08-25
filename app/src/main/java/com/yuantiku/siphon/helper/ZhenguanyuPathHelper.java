@@ -1,7 +1,5 @@
 package com.yuantiku.siphon.helper;
 
-import android.os.Environment;
-
 import com.yuantiku.siphon.app.*;
 import com.yuantiku.siphon.data.FileEntry;
 
@@ -11,7 +9,7 @@ import java.io.File;
  * Created by wanghb on 15/8/22.
  */
 public class ZhenguanyuPathHelper {
-    private final static String EndPoint = "https://app.zhenguanyu.com";
+    private final static String EndPoint = "http://app.zhenguanyu.com";
 
     public static String getEndpoint() {
         return EndPoint;
