@@ -146,7 +146,8 @@ public class MainActivityFragment extends BaseFragment {
         super.onResume();
         bus.register(this);
         setViewStatus(true);
-        updateApkConfig(apkConfig);
+        // TODO: wait work service be ready, not a good idea
+        icon.postDelayed(() -> updateApkConfig(apkConfig), 300);
         if (fileEntry != null) {
             showStatus("上次检测到：" + fileEntry.name + "\n" + fileEntry.date);
         }
@@ -229,7 +230,7 @@ public class MainActivityFragment extends BaseFragment {
             SyncTask syncTask = (SyncTask) task;
             showStatus(String.format("同步完成 : " + apkConfig.getName() + apkConfig.getType()));
             if (syncTask.getResult() == null || syncTask.getResult().isEmpty()) {
-                showStatus("没有发现安装包");
+                showStatus(apkConfig.getName() + apkConfig.getType() + "\n没有发现安装包");
                 setViewStatus(true);
             } else {
                 fileEntry = syncTask.getResult().get(0);
