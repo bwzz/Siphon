@@ -44,6 +44,7 @@ dependencies {
     compile 'commons-io:commons-io:2.0.1'
     compile 'com.pnikosis:materialish-progress:1.5'
     compile 'com.koushikdutta.ion:ion:2.+'
+    compile 'com.orhanobut:hawk:1.18'
 
     compile 'im.fir:sdk:latest.integration'
 }

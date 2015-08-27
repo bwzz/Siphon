@@ -11,16 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import bwzz.activityCallback.LaunchArgument;
-import bwzz.activityReuse.ContainerActivity;
-import bwzz.activityReuse.FragmentPackage;
-import bwzz.activityReuse.ReuseIntentBuilder;
-import bwzz.fragment.BaseFragment;
-import bwzz.taskmanager.ITask;
-
 import com.google.gson.Gson;
 import com.koushikdutta.ion.Ion;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -43,6 +33,16 @@ import com.yuantiku.siphon.task.SyncTask;
 import com.yuantiku.siphon.task.TaskFactory;
 
 import java.io.File;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import bwzz.activityCallback.LaunchArgument;
+import bwzz.activityReuse.ContainerActivity;
+import bwzz.activityReuse.FragmentPackage;
+import bwzz.activityReuse.ReuseIntentBuilder;
+import bwzz.fragment.BaseFragment;
+import bwzz.taskmanager.ITask;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -118,7 +118,9 @@ public class MainActivityFragment extends BaseFragment {
                     if (resultCode == Activity.RESULT_OK) {
                         String acs = data.getStringExtra(Key.ApkConfig);
                         Gson gson = new Gson();
-                        updateApkConfig(gson.fromJson(acs, ApkConfig.class));
+                        ApkConfig apkConfig = gson.fromJson(acs, ApkConfig.class);
+                        ApkConfigFactory.setDefault(apkConfig);
+                        updateApkConfig(apkConfig);
                     }
                     return true;
                 })
