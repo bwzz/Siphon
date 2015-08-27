@@ -47,6 +47,7 @@ public class ApkConfigFactory {
         apkConfig.name = "猿辅导";
         apkConfig.type = ApkType.alpha;
         apkConfig.icon = "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHItk3FXda*g4/800";
+        apkConfig.color = -35839;
         return apkConfig;
     }
 

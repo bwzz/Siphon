@@ -159,6 +159,7 @@ public class MainActivityFragment extends BaseFragment {
         this.apkConfig = apkConfig;
         showStatus(apkConfig.getName() + apkConfig.getType());
         Ion.with(icon).load(apkConfig.getIcon());
+        progressWheel.setBarColor(apkConfig.getColor());
         sync();
     }
 

@@ -3,13 +3,25 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".MainActivity">
     <item
-        android:id="@+id/action_select_apk"
-        android:orderInCategory="100"
-        android:title="@string/action_select_apk"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_check_update"
-        android:orderInCategory="100"
-        android:title="@string/action_check_update"
-        app:showAsAction="never"/>
+        android:title="更多"
+        app:showAsAction="always">
+
+        <menu>
+            <item
+                android:id="@+id/action_select_apk"
+                android:orderInCategory="100"
+                android:title="@string/action_select_apk"
+                app:showAsAction="always"/>
+            <item
+                android:id="@+id/action_check_update"
+                android:orderInCategory="100"
+                android:title="@string/action_check_update"
+                app:showAsAction="always"/>
+            <item
+                android:id="@+id/action_settings"
+                android:orderInCategory="100"
+                android:title="@string/action_settings"
+                app:showAsAction="always"/>
+        </menu>
+    </item>
 </menu>

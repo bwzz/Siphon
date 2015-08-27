@@ -20,8 +20,8 @@
 
         <ImageView
             android:id="@+id/icon"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="center"
             android:layout_margin="20dp"/>
 
@@ -33,7 +33,7 @@
             android:visibility="invisible"
             wheel:matProg_barColor="#ff7400"
             wheel:matProg_barWidth="3dp"
-            wheel:matProg_circleRadius="80dp"
+            wheel:matProg_circleRadius="90dp"
             wheel:matProg_progressIndeterminate="true"/>
     </FrameLayout>
 
@@ -42,8 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ellipsize="start"
-        android:maxLines="5"
-        android:minLines="3"
+        android:minLines="5"
         android:padding="10dp"
         android:text="猿辅导"
         android:textSize="16sp"/>

@@ -3,43 +3,50 @@
     "id": 102,
     "name": "猿辅导",
     "type": "alpha",
-    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHItk3FXda*g4/800"
+    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHItk3FXda*g4/800",
+    "color": -35839
   },
   {
     "id": 102,
     "name": "猿辅导",
     "type": "beta",
-    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHItk3FXda*g4/800"
+    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHItk3FXda*g4/800",
+    "color": -35839
   },
   {
     "id": 102,
     "name": "猿辅导",
     "type": "release",
-    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHItk3FXda*g4/800"
+    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHItk3FXda*g4/800",
+    "color": -35839
   },
   {
     "id": 103,
     "name": "猿辅导老师版",
     "type": "alpha",
-    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIpk3FU4tWgE/800"
+    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIpk3FU4tWgE/800",
+    "color": -35839
   },
   {
     "id": 103,
     "name": "猿辅导老师版",
     "type": "beta",
-    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIpk3FU4tWgE/800"
+    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIpk3FU4tWgE/800",
+    "color": -35839
   },
   {
     "id": 103,
     "name": "猿辅导老师版",
     "type": "release",
-    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIpk3FU4tWgE/800"
+    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIpk3FU4tWgE/800",
+    "color": -35839
   },
   {
     "id": 42,
     "name": "猿题库",
     "type": "alpha",
-    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIdk3FXGnOcX/800"
+    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIdk3FXGnOcX/800",
+    "color": -16738561
   },
   {
     "id": 42,
@@ -51,24 +58,28 @@
     "id": 42,
     "name": "猿题库",
     "type": "release",
-    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIdk3FXGnOcX/800"
+    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIdk3FXGnOcX/800",
+    "color": -16738561
   },
   {
     "id": 100,
     "name": "小猿搜题",
     "type": "alpha",
-    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIlk3FUgmyUQ/800"
+    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIlk3FUgmyUQ/800",
+    "color": -16738561
   },
   {
     "id": 100,
     "name": "小猿搜题",
     "type": "beta",
-    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIlk3FUgmyUQ/800"
+    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIlk3FUgmyUQ/800",
+    "color": -16738561
   },
   {
     "id": 100,
     "name": "小猿搜题",
     "type": "release",
-    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIlk3FUgmyUQ/800"
+    "icon": "http://group.store.qq.com/qun/V14Fy6Gm0nBKuU/V3tVxQJHIlk3FUgmyUQ/800",
+    "color": -16738561
   }
 ]

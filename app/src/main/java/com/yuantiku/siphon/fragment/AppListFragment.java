@@ -8,10 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.koushikdutta.ion.Ion;
+import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.apkconfigs.ApkConfigFactory;
 import com.yuantiku.siphon.constant.Key;
@@ -20,21 +23,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import bwzz.fragment.BaseFragment;
 
 /**
  * Created by wanghb on 15/8/23.
  */
 public class AppListFragment extends BaseFragment {
+    private LayoutInflater inflater;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ListView listView = new ListView(container.getContext());
+        this.inflater = inflater;
+        GridView listView = new GridView(container.getContext());
+        listView.setNumColumns(3);
         setupListView(listView);
         return listView;
     }
 
-    private void setupListView(ListView listView) {
+    private void setupListView(GridView listView) {
         List<ApkConfig> apkConfigs = new ArrayList<>();
         try {
             List<ApkConfig> apkConfigList = ApkConfigFactory.load();
@@ -61,11 +70,17 @@ public class AppListFragment extends BaseFragment {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 ApkConfig apkConfig = (ApkConfig) getItem(position);
-                TextView textView = new TextView(parent.getContext());
-                textView.setText(apkConfig.getName() + apkConfig.getType());
-                int padding = 40;
-                textView.setPadding(padding, padding, padding, padding);
-                return textView;
+                if (convertView == null) {
+                    convertView = inflater.inflate(R.layout.apk_item, parent, false);
+                    ViewHolder viewHolder = new ViewHolder();
+                    convertView.setTag(viewHolder);
+                    ButterKnife.bind(viewHolder, convertView);
+                }
+                ViewHolder viewHolder = (ViewHolder) convertView.getTag();
+                Ion.with(viewHolder.icon)
+                        .load(apkConfig.getIcon());
+                viewHolder.type.setText(apkConfig.getType().toString());
+                return convertView;
             }
         });
 
@@ -77,5 +92,12 @@ public class AppListFragment extends BaseFragment {
             getActivity().setResult(Activity.RESULT_OK, intent);
             getActivity().finish();
         });
+    }
+
+    public static class ViewHolder {
+        @Bind(R.id.icon)
+        public ImageView icon;
+        @Bind(R.id.type)
+        public TextView type;
     }
 }

@@ -8,6 +8,7 @@ public class ApkConfig {
     String name;
     ApkType type;
     String icon;
+    int color;
 
     public int getId() {
         return id;
@@ -27,5 +28,9 @@ public class ApkConfig {
 
     public String getIcon() {
         return icon;
+    }
+
+    public int getColor() {
+        return color;
     }
 }
