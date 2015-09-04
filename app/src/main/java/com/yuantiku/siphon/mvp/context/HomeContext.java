@@ -14,7 +14,6 @@ import com.google.gson.Gson;
 import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
-import com.yuantiku.siphon.fragment.AppListFragment;
 import com.yuantiku.siphon.fragment.CheckUpdateFragment;
 import com.yuantiku.siphon.helper.ApkHelper;
 import com.yuantiku.siphon.helper.LaunchHelper;
@@ -102,7 +101,7 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
     }
 
     private void selectApplication() {
-        LaunchArgument argument = LaunchHelper.createArgument(AppListFragment.class, getActivity(),
+        LaunchArgument argument = LaunchHelper.createArgument(AppListContext.class, getActivity(),
                 (resultCode, data) -> {
                     if (resultCode == Activity.RESULT_OK) {
                         String acs = data.getStringExtra(Key.ApkConfig);

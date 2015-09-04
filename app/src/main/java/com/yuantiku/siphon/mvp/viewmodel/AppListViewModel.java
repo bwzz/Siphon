@@ -1,59 +1,53 @@
-package com.yuantiku.siphon.fragment;
+package com.yuantiku.siphon.mvp.viewmodel;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.koushikdutta.ion.Ion;
 import com.yuantiku.siphon.R;
-import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
-import com.yuantiku.siphon.mvp.imodel.IApkConfigModel;
-import com.yuantiku.siphon.mvp.model.ApkConfigModel;
+import com.yuantiku.siphon.mvp.presenter.AppListPresenter;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import bwzz.fragment.BaseFragment;
 
 /**
- * Created by wanghb on 15/8/23.
+ * Created by wanghb on 15/9/4.
  */
-public class AppListFragment extends BaseFragment {
+public class AppListViewModel extends BaseViewModel implements AppListPresenter.IView {
+
+    public interface IHandler {
+        void onAppSelected(ApkConfig apkConfig);
+    }
+
+    private AbsListView listView;
     private LayoutInflater inflater;
 
-    private IApkConfigModel apkConfigModel = ApkConfigModel.getDefaultApkConfigModel();
+    private IHandler handler;
 
-    @Nullable
-    @Override
+    public AppListViewModel(IHandler handler) {
+        this.handler = handler;
+    }
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        this.inflater = inflater;
         GridView listView = new GridView(container.getContext());
         listView.setNumColumns(3);
-        setupListView(listView);
+        this.listView = listView;
+        this.inflater = inflater;
         return listView;
     }
 
-    private void setupListView(GridView listView) {
-        List<ApkConfig> apkConfigs = new ArrayList<>();
-        try {
-            List<ApkConfig> apkConfigList = apkConfigModel.load();
-            apkConfigs.addAll(apkConfigList);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public void renderList(List<ApkConfig> apkConfigs) {
         listView.setAdapter(new BaseAdapter() {
             @Override
             public int getCount() {
@@ -89,12 +83,13 @@ public class AppListFragment extends BaseFragment {
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
             ApkConfig apkConfig = apkConfigs.get(position);
-            Gson gson = new Gson();
-            Intent intent = new Intent();
-            intent.putExtra(Key.ApkConfig, gson.toJson(apkConfig));
-            getActivity().setResult(Activity.RESULT_OK, intent);
-            getActivity().finish();
+            handler.onAppSelected(apkConfig);
         });
+    }
+
+    @Override
+    public void renderLoadListFailed() {
+        // TODO
     }
 
     public static class ViewHolder {
