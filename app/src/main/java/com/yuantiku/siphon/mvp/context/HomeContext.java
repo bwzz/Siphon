@@ -10,12 +10,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.Gson;
 import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.fragment.CheckUpdateFragment;
 import com.yuantiku.siphon.helper.ApkHelper;
+import com.yuantiku.siphon.helper.JsonHelper;
 import com.yuantiku.siphon.helper.LaunchHelper;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.model.ApkConfigModel;
@@ -105,8 +105,7 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
                 (resultCode, data) -> {
                     if (resultCode == Activity.RESULT_OK) {
                         String acs = data.getStringExtra(Key.ApkConfig);
-                        Gson gson = new Gson();
-                        ApkConfig apkConfig = gson.fromJson(acs, ApkConfig.class);
+                        ApkConfig apkConfig = JsonHelper.json(acs, ApkConfig.class);
                         homePresenter.updateApkConfig(apkConfig);
                     }
                     return true;

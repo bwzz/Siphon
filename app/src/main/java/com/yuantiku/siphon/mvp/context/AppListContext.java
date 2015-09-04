@@ -8,9 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.Gson;
 import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
+import com.yuantiku.siphon.helper.JsonHelper;
 import com.yuantiku.siphon.mvp.model.ApkConfigModel;
 import com.yuantiku.siphon.mvp.presenter.AppListPresenter;
 import com.yuantiku.siphon.mvp.viewmodel.AppListViewModel;
@@ -32,9 +32,8 @@ public class AppListContext extends BaseContext implements AppListViewModel.IHan
 
     @Override
     public void onAppSelected(ApkConfig apkConfig) {
-        Gson gson = new Gson();
         Intent intent = new Intent();
-        intent.putExtra(Key.ApkConfig, gson.toJson(apkConfig));
+        intent.putExtra(Key.ApkConfig, JsonHelper.json(apkConfig));
         getActivity().setResult(Activity.RESULT_OK, intent);
         getActivity().finish();
     }

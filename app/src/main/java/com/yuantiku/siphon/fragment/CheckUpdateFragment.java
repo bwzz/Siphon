@@ -8,17 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.helper.ApkHelper;
 import com.yuantiku.siphon.helper.AppHelper;
 import com.yuantiku.siphon.helper.CheckUpdateHelper;
+import com.yuantiku.siphon.helper.JsonHelper;
 import com.yuantiku.siphon.helper.PathHelper;
-import com.yuantiku.siphon.mvp.model.FileModelFactory;
-import com.yuantiku.siphon.mvp.imodel.IFileModelFactory;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
+import com.yuantiku.siphon.mvp.imodel.IFileModelFactory;
+import com.yuantiku.siphon.mvp.model.FileModelFactory;
 import com.yuantiku.siphon.task.DownloadTask;
 import com.yuantiku.siphon.task.ITaskFactory;
 import com.yuantiku.siphon.task.TaskFactory;
@@ -66,9 +66,8 @@ public class CheckUpdateFragment extends BaseFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (getArguments() != null) {
-            Gson gson = new Gson();
             String appVersionStr = getArguments().getString(Key.AppVersion);
-            appVersion = gson.fromJson(appVersionStr, AppVersion.class);
+            appVersion = JsonHelper.json(appVersionStr, AppVersion.class);
         }
         if (appVersion == null) {
             checkUpdate();

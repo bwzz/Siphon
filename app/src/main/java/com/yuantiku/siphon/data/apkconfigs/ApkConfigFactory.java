@@ -2,12 +2,12 @@ package com.yuantiku.siphon.data.apkconfigs;
 
 import android.content.Context;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.HawkBuilder;
 import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.app.ApplicationFactory;
+import com.yuantiku.siphon.helper.JsonHelper;
 
 import org.apache.commons.io.IOUtils;
 
@@ -23,8 +23,7 @@ public class ApkConfigFactory {
     public static List<ApkConfig> load() throws IOException {
         Context context = ApplicationFactory.getApplication();
         InputStream inputStream = context.getResources().openRawResource(R.raw.apk_configs);
-        Gson gson = new Gson();
-        List<ApkConfig> list = gson.fromJson(IOUtils.toString(inputStream),
+        List<ApkConfig> list = JsonHelper.jsonList(IOUtils.toString(inputStream),
                 new TypeToken<List<ApkConfig>>() {
                 }.getType());
         if (list == null) {

@@ -2,22 +2,28 @@ package com.yuantiku.siphon.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.*;
+import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import com.google.gson.*;
-import com.yuantiku.siphon.constant.*;
-import com.yuantiku.siphon.fragment.*;
+import com.yuantiku.siphon.constant.Key;
+import com.yuantiku.siphon.fragment.CheckUpdateFragment;
 import com.yuantiku.siphon.helper.CheckUpdateHelper;
+import com.yuantiku.siphon.helper.JsonHelper;
 
-import bwzz.activityCallback.*;
-import bwzz.activityReuse.*;
+import bwzz.activityCallback.ILauncher;
+import bwzz.activityCallback.LaunchArgument;
+import bwzz.activityCallback.LaunchHelper;
+import bwzz.activityReuse.ContainerActivity;
+import bwzz.activityReuse.FragmentPackage;
+import bwzz.activityReuse.ReuseIntentBuilder;
 import im.fir.sdk.version.AppVersion;
 
 /**
  * Created by wanghb on 15/8/22.
  */
-public class CheckUpdateService extends Service implements CheckUpdateHelper.CheckUpdateCallback, ILauncher {
+public class CheckUpdateService extends Service implements CheckUpdateHelper.CheckUpdateCallback,
+        ILauncher {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -33,7 +39,7 @@ public class CheckUpdateService extends Service implements CheckUpdateHelper.Che
     @Override
     public void onNewVersion(AppVersion appVersion) {
         Bundle bundle = new Bundle();
-        bundle.putString(Key.AppVersion, new Gson().toJson(appVersion));
+        bundle.putString(Key.AppVersion, JsonHelper.json(appVersion));
         FragmentPackage fragmentPackage = new FragmentPackage();
         fragmentPackage.setContainer(android.R.id.content)
                 .setArgument(bundle)
