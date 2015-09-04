@@ -1,7 +1,8 @@
-<fragment android:id="@+id/fragment"
-          android:name="com.yuantiku.siphon.fragment.MainActivityFragment"
-          xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          tools:layout="@layout/fragment_main"/>
+<fragment
+    android:id="@+id/fragment"
+    android:name="com.yuantiku.siphon.mvp.context.HomeContext"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:layout="@layout/fragment_main"/>

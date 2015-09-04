@@ -16,10 +16,12 @@ import com.yuantiku.siphon.helper.ApkHelper;
 import com.yuantiku.siphon.helper.AppHelper;
 import com.yuantiku.siphon.helper.CheckUpdateHelper;
 import com.yuantiku.siphon.helper.PathHelper;
+import com.yuantiku.siphon.mvp.model.FileModelFactory;
+import com.yuantiku.siphon.mvp.imodel.IFileModelFactory;
+import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.task.DownloadTask;
+import com.yuantiku.siphon.task.ITaskFactory;
 import com.yuantiku.siphon.task.TaskFactory;
-
-import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -45,7 +47,11 @@ public class CheckUpdateFragment extends BaseFragment {
 
     private Handler handler;
 
-    private File apkFile;
+    private IFileModel apkFile;
+
+    private ITaskFactory taskFactory = TaskFactory.getDefault();
+
+    private IFileModelFactory fileModelFactory = FileModelFactory.getDefault();
 
     @Nullable
     @Override
@@ -86,11 +92,12 @@ public class CheckUpdateFragment extends BaseFragment {
         L.e("download " + appVersion.getUpdateUrl());
         String filename = String.format("%s-%s.apk", AppHelper.getAppName(getActivity()),
                 appVersion.getVersionName());
-        apkFile = PathHelper.getCacheFilePath(getActivity(), filename);
+        apkFile = fileModelFactory.createFileModel(PathHelper.getCacheFilePath(getActivity(),
+                filename).getPath());
         progressWheel.setVisibility(View.VISIBLE);
 
-        DownloadTask task = TaskFactory.createDownloadTask(appVersion.getUpdateUrl(),
-                apkFile.getAbsolutePath());
+        DownloadTask task = taskFactory.createDownloadTask(appVersion.getUpdateUrl(),
+                apkFile.getPath());
         task.run(new ITaskReporter() {
             @Override
             public void onTaskStart(ITask task) {

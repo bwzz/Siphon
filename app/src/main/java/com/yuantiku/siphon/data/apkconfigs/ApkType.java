@@ -1,4 +1,4 @@
-package com.yuantiku.siphon.apkconfigs;
+package com.yuantiku.siphon.data.apkconfigs;
 
 /**
  * Created by wanghb on 15/8/23.

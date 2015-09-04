@@ -1,4 +1,4 @@
-package com.yuantiku.siphon.apkconfigs;
+package com.yuantiku.siphon.data.apkconfigs;
 
 import android.content.Context;
 

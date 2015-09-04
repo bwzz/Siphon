@@ -47,4 +47,11 @@ dependencies {
     compile 'com.orhanobut:hawk:1.18'
 
     compile 'im.fir:sdk:latest.integration'
+
+    // Unit testing dependencies
+    testCompile 'junit:junit:4.12'
+    // Set this dependency if you want to use Mockito
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    // Set this dependency if you want to use Hamcrest matching
+    androidTestCompile 'org.hamcrest:hamcrest-library:1.1'
 }

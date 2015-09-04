@@ -1,4 +1,4 @@
-package com.yuantiku.siphon.apkconfigs;
+package com.yuantiku.siphon.data.apkconfigs;
 
 /**
  * Created by wanghb on 15/8/23.
@@ -32,5 +32,19 @@ public class ApkConfig {
 
     public int getColor() {
         return color;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ApkConfig)) {
+            return false;
+        }
+        ApkConfig oth = (ApkConfig) o;
+        return oth.id == id && oth.type == type;
+    }
+
+    @Override
+    public int hashCode() {
+        return id ^ type.hashCode();
     }
 }

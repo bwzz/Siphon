@@ -15,9 +15,10 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.koushikdutta.ion.Ion;
 import com.yuantiku.siphon.R;
-import com.yuantiku.siphon.apkconfigs.ApkConfig;
-import com.yuantiku.siphon.apkconfigs.ApkConfigFactory;
 import com.yuantiku.siphon.constant.Key;
+import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
+import com.yuantiku.siphon.mvp.imodel.IApkConfigModel;
+import com.yuantiku.siphon.mvp.model.ApkConfigModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +34,8 @@ import bwzz.fragment.BaseFragment;
 public class AppListFragment extends BaseFragment {
     private LayoutInflater inflater;
 
+    private IApkConfigModel apkConfigModel = ApkConfigModel.getDefaultApkConfigModel();
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,7 +49,7 @@ public class AppListFragment extends BaseFragment {
     private void setupListView(GridView listView) {
         List<ApkConfig> apkConfigs = new ArrayList<>();
         try {
-            List<ApkConfig> apkConfigList = ApkConfigFactory.load();
+            List<ApkConfig> apkConfigList = apkConfigModel.load();
             apkConfigs.addAll(apkConfigList);
         } catch (IOException e) {
             e.printStackTrace();
