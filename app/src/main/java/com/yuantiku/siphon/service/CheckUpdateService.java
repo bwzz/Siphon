@@ -7,9 +7,9 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.yuantiku.siphon.constant.Key;
-import com.yuantiku.siphon.fragment.CheckUpdateFragment;
 import com.yuantiku.siphon.helper.CheckUpdateHelper;
 import com.yuantiku.siphon.helper.JsonHelper;
+import com.yuantiku.siphon.mvp.context.CheckUpdateContext;
 
 import bwzz.activityCallback.ILauncher;
 import bwzz.activityCallback.LaunchArgument;
@@ -43,7 +43,7 @@ public class CheckUpdateService extends Service implements CheckUpdateHelper.Che
         FragmentPackage fragmentPackage = new FragmentPackage();
         fragmentPackage.setContainer(android.R.id.content)
                 .setArgument(bundle)
-                .setFragmentClassName(CheckUpdateFragment.class.getName());
+                .setFragmentClassName(CheckUpdateContext.class.getName());
 
         LaunchArgument argument = ReuseIntentBuilder.build()
                 .activity(ContainerActivity.class)

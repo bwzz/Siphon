@@ -1,10 +1,10 @@
 package com.yuantiku.siphon.helper;
 
-import android.content.*;
-import android.view.View;
+import android.content.Context;
+import android.content.Intent;
 
 import com.yuantiku.siphon.app.ApplicationFactory;
-import com.yuantiku.siphon.service.*;
+import com.yuantiku.siphon.service.CheckUpdateService;
 
 import im.fir.sdk.FIR;
 import im.fir.sdk.callback.VersionCheckCallback;
@@ -33,7 +33,7 @@ public class CheckUpdateHelper {
                 if (checkUpdateCallback == null) {
                     return;
                 }
-                if (AppHelper.getVersionCode(ApplicationFactory.getApplication()) < appVersion
+                if (AppHelper.getVersionCode(ApplicationFactory.getApplication()) <= appVersion
                         .getVersionCode()) {
                     checkUpdateCallback.onNewVersion(appVersion);
                 } else {

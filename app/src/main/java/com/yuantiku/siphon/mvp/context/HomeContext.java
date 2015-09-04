@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
-import com.yuantiku.siphon.fragment.CheckUpdateFragment;
 import com.yuantiku.siphon.helper.ApkHelper;
 import com.yuantiku.siphon.helper.JsonHelper;
 import com.yuantiku.siphon.helper.LaunchHelper;
@@ -114,7 +113,7 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
     }
 
     private void checkUpdate() {
-        LaunchArgument argument = LaunchHelper.createArgument(CheckUpdateFragment.class,
+        LaunchArgument argument = LaunchHelper.createArgument(CheckUpdateContext.class,
                 getActivity());
         launch(argument);
     }
