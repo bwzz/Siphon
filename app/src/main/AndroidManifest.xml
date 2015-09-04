@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.yuantiku.siphon"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    package="com.yuantiku.siphon"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
         android:name=".app.Siphon"
@@ -22,6 +23,11 @@
 
         <service android:name=".service.WorkService"/>
         <service android:name=".service.CheckUpdateService"/>
+
+        <provider
+            android:name=".mvp.model.FileEntryModel$FileEntryProvider"
+            android:authorities="siphon.yuantiku.com"
+            android:exported="false"/>
 
         <meta-data
             android:name="BUG_HD_SDK_GENERAL_KEY"

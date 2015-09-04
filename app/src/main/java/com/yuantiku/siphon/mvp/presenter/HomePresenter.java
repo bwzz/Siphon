@@ -6,6 +6,7 @@ import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.data.FileEntry;
 import com.yuantiku.siphon.factory.EmptyObjectFactory;
 import com.yuantiku.siphon.mvp.imodel.IApkConfigModel;
+import com.yuantiku.siphon.mvp.imodel.IFileEntryModel;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.imodel.IFileModelFactory;
 import com.yuantiku.siphon.mvp.model.FileModelFactory;
@@ -71,10 +72,15 @@ public class HomePresenter extends BasePresenter {
 
     private IApkConfigModel apkConfigModel;
 
-    public HomePresenter(IPresenterManager presenterManager, IApkConfigModel apkConfigModel) {
+    private IFileEntryModel fileEntryModel;
+
+    public HomePresenter(IPresenterManager presenterManager, IApkConfigModel apkConfigModel,
+            IFileEntryModel fileEntryModel) {
         super(presenterManager);
         this.apkConfigModel = apkConfigModel;
+        this.fileEntryModel = fileEntryModel;
         apkConfig = apkConfigModel.getDefault();
+        fileEntry = fileEntryModel.getLatest(apkConfig);
     }
 
     @Override
@@ -173,9 +179,11 @@ public class HomePresenter extends BasePresenter {
         }
         if (task instanceof SyncTask) {
             SyncTask syncTask = (SyncTask) task;
-            view.renderSyncSuccess(apkConfig, syncTask.getResult());
-            if (syncTask.getResult() != null && !syncTask.getResult().isEmpty()) {
-                fileEntry = syncTask.getResult().get(0);
+            final List<FileEntry> fileEntries = syncTask.getResult();
+            view.renderSyncSuccess(apkConfig, fileEntries);
+            if (fileEntries != null && !fileEntries.isEmpty()) {
+                fileEntryModel.updateAll(fileEntries, apkConfig);
+                fileEntry = fileEntries.get(0);
                 IFileModel fileModel = fileModelFactory.createFileModel(fileEntry);
                 if (fileModel.exists()) {
                     apkFile = fileModel;

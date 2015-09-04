@@ -65,6 +65,11 @@ public class HomeViewModel extends BaseViewModel implements HomePresenter.IView 
         progressWheel.setBarColor(apkConfig.getColor());
         setViewStatus(true);
         downloadInstall.setEnabled(fileEntry != null);
+        if (fileEntry != null) {
+            showStatus(String.format("同步完成 : %s\n%s\n%s",
+                    apkConfig.getName() + apkConfig.getType(), fileEntry.name,
+                    fileEntry.date));
+        }
     }
 
     @Override

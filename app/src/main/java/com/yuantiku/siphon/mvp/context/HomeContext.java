@@ -18,6 +18,7 @@ import com.yuantiku.siphon.helper.JsonHelper;
 import com.yuantiku.siphon.helper.LaunchHelper;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.model.ApkConfigModel;
+import com.yuantiku.siphon.mvp.model.FileEntryModel;
 import com.yuantiku.siphon.mvp.presenter.HomePresenter;
 import com.yuantiku.siphon.mvp.presenter.IPresenterManager;
 import com.yuantiku.siphon.mvp.viewmodel.HomeViewModel;
@@ -42,7 +43,8 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
     protected void createPresenters(@NonNull IPresenterManager presenterManager) {
         super.createPresenters(presenterManager);
         homePresenter = new HomePresenter(presenterManager,
-                ApkConfigModel.getDefaultApkConfigModel());
+                ApkConfigModel.getDefaultApkConfigModel(),
+                new FileEntryModel(getActivity()));
         homePresenter.setHandler(this);
     }
 
@@ -117,4 +119,5 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
                 getActivity());
         launch(argument);
     }
+
 }
