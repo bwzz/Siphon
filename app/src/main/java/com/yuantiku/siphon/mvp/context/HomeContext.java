@@ -17,6 +17,7 @@ import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.fragment.AppListFragment;
 import com.yuantiku.siphon.fragment.CheckUpdateFragment;
 import com.yuantiku.siphon.helper.ApkHelper;
+import com.yuantiku.siphon.helper.LaunchHelper;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.model.ApkConfigModel;
 import com.yuantiku.siphon.mvp.presenter.HomePresenter;
@@ -24,9 +25,6 @@ import com.yuantiku.siphon.mvp.presenter.IPresenterManager;
 import com.yuantiku.siphon.mvp.viewmodel.HomeViewModel;
 
 import bwzz.activityCallback.LaunchArgument;
-import bwzz.activityReuse.ContainerActivity;
-import bwzz.activityReuse.FragmentPackage;
-import bwzz.activityReuse.ReuseIntentBuilder;
 
 /**
  * Created by wanghb on 15/9/3.
@@ -104,18 +102,8 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
     }
 
     private void selectApplication() {
-        Bundle bundle = new Bundle();
-        FragmentPackage fragmentPackage = new FragmentPackage();
-        fragmentPackage.setContainer(android.R.id.content)
-                .setArgument(bundle)
-                .setFragmentClassName(AppListFragment.class.getName());
-
-        LaunchArgument argument = ReuseIntentBuilder.build()
-                .activity(ContainerActivity.class)
-                .fragmentPackage(fragmentPackage)
-                .getLaunchArgumentBuilder(getActivity())
-                .requestCode(123)
-                .callback((resultCode, data) -> {
+        LaunchArgument argument = LaunchHelper.createArgument(AppListFragment.class, getActivity(),
+                (resultCode, data) -> {
                     if (resultCode == Activity.RESULT_OK) {
                         String acs = data.getStringExtra(Key.ApkConfig);
                         Gson gson = new Gson();
@@ -123,23 +111,13 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
                         homePresenter.updateApkConfig(apkConfig);
                     }
                     return true;
-                })
-                .get();
+                });
         launch(argument);
     }
 
     private void checkUpdate() {
-        Bundle bundle = new Bundle();
-        FragmentPackage fragmentPackage = new FragmentPackage();
-        fragmentPackage.setContainer(android.R.id.content)
-                .setArgument(bundle)
-                .setFragmentClassName(CheckUpdateFragment.class.getName());
-
-        LaunchArgument argument = ReuseIntentBuilder.build()
-                .activity(ContainerActivity.class)
-                .fragmentPackage(fragmentPackage)
-                .getLaunchArgumentBuilder(getActivity())
-                .get();
+        LaunchArgument argument = LaunchHelper.createArgument(CheckUpdateFragment.class,
+                getActivity());
         launch(argument);
     }
 }

@@ -6,13 +6,8 @@ import android.content.Intent;
  * Created by wanghb on 15/8/12.
  */
 public class LaunchArgument {
-    private int requestCode;
     private Intent intent;
     private ResultCallback callback;
-
-    public int getRequestCode() {
-        return requestCode;
-    }
 
     public Intent getIntent() {
         return intent;
@@ -31,11 +26,6 @@ public class LaunchArgument {
 
     public static class Builder {
         private LaunchArgument argument = new LaunchArgument();
-
-        public Builder requestCode(int code) {
-            argument.requestCode = code;
-            return this;
-        }
 
         public Builder intent(Intent intent) {
             argument.intent = intent;

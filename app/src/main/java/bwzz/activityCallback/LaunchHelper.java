@@ -16,14 +16,16 @@ public class LaunchHelper {
     }
 
     public LaunchHelper launch(LaunchArgument argument) {
-        argumentSparseArray.put(argument.getRequestCode(), argument);
-        launcher.startActivityForResult(argument.getIntent(), argument.getRequestCode());
+        int requestCode = RequestCodeGenerator.generateRequestCode(argumentSparseArray);
+        argumentSparseArray.put(requestCode, argument);
+        launcher.startActivityForResult(argument.getIntent(), requestCode);
         return this;
     }
 
     public boolean onResult(int requestCode, int resultCode, Intent data) {
         LaunchArgument argument = argumentSparseArray.get(requestCode);
         if (argument != null) {
+            argumentSparseArray.remove(requestCode);
             return argument.applyCallback(resultCode, data);
         } else {
             return false;
