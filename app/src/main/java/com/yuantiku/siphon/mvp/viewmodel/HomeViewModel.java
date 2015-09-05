@@ -31,6 +31,8 @@ public class HomeViewModel extends BaseViewModel implements HomePresenter.IView 
         void onSync();
 
         void onDownloadAndInstall();
+
+        void onIcon();
     }
 
     @Bind(R.id.sync)
@@ -100,26 +102,29 @@ public class HomeViewModel extends BaseViewModel implements HomePresenter.IView 
     }
 
     @Override
-    public void renderDownloadStart(ApkConfig apkConfig) {
+    public void renderDownloadStart(FileEntry fileEntry) {
         setViewStatus(false);
+        ApkConfig apkConfig = fileEntry.apkConfig;
         showStatus("开始下载 : " + apkConfig.getName() + apkConfig.getType());
     }
 
     @Override
-    public void renderDownloadProgress(ApkConfig apkConfig, FileEntry fileEntry, float percent) {
+    public void renderDownloadProgress(FileEntry fileEntry, float percent) {
+        ApkConfig apkConfig = fileEntry.apkConfig;
         showStatus(String.format("%s\n下载中：%.2f%%\n%s", apkConfig.getName() + apkConfig.getType(),
                 percent, fileEntry.name));
     }
 
     @Override
-    public void renderDownloadSuccess(ApkConfig apkConfig, IFileModel result) {
+    public void renderDownloadSuccess(FileEntry fileEntry, IFileModel result) {
+        ApkConfig apkConfig = fileEntry.apkConfig;
         showStatus("下载完成 : " + apkConfig.getName() + apkConfig.getType() + "\n"
                 + result);
         setViewStatus(true);
     }
 
     @Override
-    public void renderDownloadFailed(ApkConfig apkConfig, TaskException e) {
+    public void renderDownloadFailed(FileEntry fileEntry, TaskException e) {
         showStatus("请求失败\n" + e.getMessage());
         setViewStatus(true);
     }
@@ -136,7 +141,7 @@ public class HomeViewModel extends BaseViewModel implements HomePresenter.IView 
     }
 
     @OnClick({
-            R.id.one_step, R.id.sync, R.id.download_install
+            R.id.one_step, R.id.sync, R.id.download_install, R.id.icon
     })
     public void onClicked(View view) {
         switch (view.getId()) {
@@ -148,6 +153,9 @@ public class HomeViewModel extends BaseViewModel implements HomePresenter.IView 
                 break;
             case R.id.download_install:
                 handler.onDownloadAndInstall();
+                break;
+            case R.id.icon:
+                handler.onIcon();
                 break;
         }
     }

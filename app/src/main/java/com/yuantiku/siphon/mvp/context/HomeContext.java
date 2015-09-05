@@ -93,6 +93,13 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
     }
 
     @Override
+    public void onIcon() {
+        LaunchArgument argument = LaunchHelper.createArgument(FileEntriesContext.class,
+                getActivity());
+        launch(argument);
+    }
+
+    @Override
     public void installApkFile(IFileModel apkFile) {
         try {
             ApkHelper.installApk(getActivity(), apkFile);

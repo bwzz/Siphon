@@ -4,6 +4,7 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 
 import com.yuantiku.siphon.data.FileEntry;
+import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.webservice.ServiceFactory;
 
 import java.util.List;
@@ -16,23 +17,28 @@ import rx.android.schedulers.AndroidSchedulers;
  */
 public class SyncTask extends AbstractTask<List<FileEntry>> {
 
-    private String dir;
+    private ApkConfig apkConfig;
 
-    SyncTask(String dir) {
-        this(dir, new TaskReportHandler(Looper.myLooper()));
+    SyncTask(ApkConfig apkConfig) {
+        this(apkConfig, new TaskReportHandler(Looper.myLooper()));
     }
 
-    SyncTask(String dir, TaskReportHandler handler) {
-        super(dir, handler);
-        this.dir = dir;
+    SyncTask(ApkConfig apkConfig, TaskReportHandler handler) {
+        super(apkConfig.getListPath(), handler);
+        this.apkConfig = apkConfig;
+    }
+
+    public ApkConfig getApkConfig() {
+        return apkConfig;
     }
 
     @Override
     public void run(@Nullable ITaskReporter taskReporter) {
         ServiceFactory.createZhenguanyuService()
-                .listFiles(dir)
+                .listFiles(apkConfig.getListPath())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((list) -> {
+                    setApkConfigForResult(list);
                     setResult(list);
                     reportTaskFinish(taskReporter);
                 }, (error) -> {
@@ -50,4 +56,9 @@ public class SyncTask extends AbstractTask<List<FileEntry>> {
         }
     }
 
+    private void setApkConfigForResult(List<FileEntry> fileEntries) {
+        for (FileEntry fileEntry : fileEntries) {
+            fileEntry.apkConfig = apkConfig;
+        }
+    }
 }

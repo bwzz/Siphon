@@ -1,28 +1,18 @@
 package com.yuantiku.siphon.mvp.presenter;
 
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
-import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.data.FileEntry;
+import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.factory.EmptyObjectFactory;
 import com.yuantiku.siphon.mvp.imodel.IApkConfigModel;
 import com.yuantiku.siphon.mvp.imodel.IFileEntryModel;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.imodel.IFileModelFactory;
 import com.yuantiku.siphon.mvp.model.FileModelFactory;
-import com.yuantiku.siphon.otto.BusFactory;
-import com.yuantiku.siphon.otto.taskevent.SubmitTaskEvent;
-import com.yuantiku.siphon.otto.taskevent.TaskFinishEvent;
-import com.yuantiku.siphon.otto.taskevent.TaskProgressEvent;
-import com.yuantiku.siphon.otto.taskevent.TaskStartEvent;
-import com.yuantiku.siphon.task.DownloadApkTask;
-import com.yuantiku.siphon.task.ITaskFactory;
-import com.yuantiku.siphon.task.SyncTask;
-import com.yuantiku.siphon.task.TaskFactory;
+import com.yuantiku.siphon.task.DownloadHelper;
+import com.yuantiku.siphon.task.SyncHelper;
 
 import java.util.List;
 
-import bwzz.taskmanager.ITask;
 import bwzz.taskmanager.TaskException;
 
 /**
@@ -30,35 +20,17 @@ import bwzz.taskmanager.TaskException;
  */
 public class HomePresenter extends BasePresenter {
 
-    public interface IView {
+    public interface IView extends FileEntriesListPresenter.IView {
         void renderApkConfig(ApkConfig apkConfig, FileEntry fileEntry, IFileModel apkFile);
-
-        void renderSyncStart(ApkConfig apkConfig);
-
-        void renderSyncFailed(ApkConfig apkConfig, TaskException e);
-
-        void renderSyncSuccess(ApkConfig apkConfig, List<FileEntry> fileEntries);
-
-        void renderDownloadStart(ApkConfig apkConfig);
-
-        void renderDownloadProgress(ApkConfig apkConfig, FileEntry fileEntry, float percent);
-
-        void renderDownloadSuccess(ApkConfig apkConfig, IFileModel result);
-
-        void renderDownloadFailed(ApkConfig apkConfig, TaskException e);
     }
 
     public interface IHandler {
         void installApkFile(IFileModel apkFile);
     }
 
-    private Bus bus = BusFactory.getBus();
-
     private boolean installAuto;
 
     private FileEntry fileEntry;
-
-    private IFileModel apkFile;
 
     private ApkConfig apkConfig;
 
@@ -66,13 +38,13 @@ public class HomePresenter extends BasePresenter {
 
     private IHandler handler = EmptyObjectFactory.createEmptyObject(IHandler.class);
 
-    private ITaskFactory taskFactory = TaskFactory.getDefault();
-
     private IFileModelFactory fileModelFactory = FileModelFactory.getDefault();
 
     private IApkConfigModel apkConfigModel;
 
     private IFileEntryModel fileEntryModel;
+
+    private FileEntriesListPresenter fileEntriesListPresenter;
 
     public HomePresenter(IPresenterManager presenterManager, IApkConfigModel apkConfigModel,
             IFileEntryModel fileEntryModel) {
@@ -86,29 +58,22 @@ public class HomePresenter extends BasePresenter {
     @Override
     public void onResume() {
         super.onResume();
-        view.renderApkConfig(apkConfig, fileEntry, apkFile);
-        bus.register(this);
+        view.renderApkConfig(apkConfig, fileEntry, getApkFile(fileEntry));
     }
 
     @Override
     public void onPause() {
-        bus.unregister(this);
         super.onPause();
     }
 
     public HomePresenter attachView(IView view) {
         this.view = EmptyObjectFactory.ensureObject(view, IView.class);
-        view.renderApkConfig(apkConfig, fileEntry, apkFile);
+        view.renderApkConfig(apkConfig, fileEntry, getApkFile(fileEntry));
         return this;
     }
 
     public HomePresenter setHandler(IHandler handler) {
         this.handler = EmptyObjectFactory.ensureObject(handler, IHandler.class);
-        return this;
-    }
-
-    public HomePresenter setTaskFactory(ITaskFactory taskFactory) {
-        this.taskFactory = taskFactory;
         return this;
     }
 
@@ -122,10 +87,12 @@ public class HomePresenter extends BasePresenter {
             return;
         }
         this.apkConfig = apkConfig;
-        fileEntry = null;
-        apkFile = null;
-        view.renderApkConfig(apkConfig, fileEntry, apkFile);
         apkConfigModel.setDefault(apkConfig);
+
+        fileEntry = fileEntryModel.getLatest(apkConfig);
+        view.renderApkConfig(apkConfig, fileEntry, getApkFile(fileEntry));
+
+        swapFileEntriesPresenter(view, fileEntryModel);
     }
 
     public void oneStep() {
@@ -135,71 +102,78 @@ public class HomePresenter extends BasePresenter {
 
     public void sync() {
         installAuto = false;
-        bus.post(new SubmitTaskEvent(taskFactory.createSyncTask(apkConfig.getListPath())));
-        view.renderSyncStart(apkConfig);
+        swapFileEntriesPresenter(view, fileEntryModel);
+        fileEntriesListPresenter.sync(new SyncHelper.IHandler() {
+            @Override
+            public void onSyncStart(ApkConfig apkConfig) {
+
+            }
+
+            @Override
+            public void onSyncSuccess(ApkConfig apkConfig, List<FileEntry> fileEntries) {
+                HomePresenter.this.onSyncSuccess(apkConfig, fileEntries);
+            }
+
+            @Override
+            public void onSyncFailed(ApkConfig apkConfig, TaskException e) {
+
+            }
+        });
     }
 
     public void downloadInstall() {
+        IFileModel apkFile = getApkFile(fileEntry);
         if (apkFile != null && apkFile.exists()) {
-            view.renderDownloadSuccess(apkConfig, apkFile);
+            view.renderDownloadSuccess(fileEntry, apkFile);
             handler.installApkFile(apkFile);
         } else if (fileEntry != null) {
-            bus.post(new SubmitTaskEvent(taskFactory.createDownloadTask(fileEntry)));
-            view.renderDownloadStart(apkConfig);
-        }
-    }
+            fileEntriesListPresenter.download(new DownloadHelper.IHandler() {
+                @Override
+                public void onDownloadStart(FileEntry fileEntry) {
 
-    @Subscribe
-    public void onTaskStartEvent(TaskStartEvent taskStartEvent) {
-        ITask task = taskStartEvent.getTask();
-        if (task instanceof SyncTask) {
-            SyncTask syncTask = (SyncTask) task;
-            view.renderSyncStart(apkConfig);
-        } else if (task instanceof DownloadApkTask) {
-            DownloadApkTask downloadApkTask = (DownloadApkTask) task;
-            view.renderDownloadStart(apkConfig);
-        }
-    }
-
-    @Subscribe
-    public void onTaskProgressEvent(TaskProgressEvent taskProgressEvent) {
-        view.renderDownloadProgress(apkConfig, fileEntry, taskProgressEvent.getPercent());
-    }
-
-    @Subscribe
-    public void onTaskFinishEvent(TaskFinishEvent taskFinishEvent) {
-        ITask task = taskFinishEvent.getTask();
-        if (task.getTaskException() != null) {
-            if (task instanceof SyncTask) {
-                view.renderSyncFailed(apkConfig, task.getTaskException());
-            } else {
-                view.renderDownloadFailed(apkConfig, task.getTaskException());
-            }
-            return;
-        }
-        if (task instanceof SyncTask) {
-            SyncTask syncTask = (SyncTask) task;
-            final List<FileEntry> fileEntries = syncTask.getResult();
-            view.renderSyncSuccess(apkConfig, fileEntries);
-            if (fileEntries != null && !fileEntries.isEmpty()) {
-                fileEntryModel.updateAll(fileEntries, apkConfig);
-                fileEntry = fileEntries.get(0);
-                IFileModel fileModel = fileModelFactory.createFileModel(fileEntry);
-                if (fileModel.exists()) {
-                    apkFile = fileModel;
-                } else {
-                    apkFile = null;
                 }
 
-                if (installAuto) {
-                    downloadInstall();
+                @Override
+                public void onDownloadSuccess(FileEntry fileEntry, IFileModel fileModel) {
+                    handler.installApkFile(fileModel);
                 }
-            }
-        } else if (task instanceof DownloadApkTask) {
-            DownloadApkTask downloadApkTask = (DownloadApkTask) task;
-            apkFile = downloadApkTask.getResult();
-            view.renderDownloadSuccess(apkConfig, apkFile);
-            handler.installApkFile(apkFile);
+
+                @Override
+                public void onDownloadProgress(FileEntry fileEntry, float percent) {
+
+                }
+
+                @Override
+                public void onDownloadFailed(FileEntry fileEntry, TaskException e) {
+
+                }
+            }, fileEntry);
         }
     }
+
+    private void onSyncSuccess(ApkConfig apkConfig, List<FileEntry> fileEntries) {
+        fileEntryModel.updateAll(fileEntries, apkConfig);
+        fileEntry = fileEntries.get(0);
+        if (installAuto) {
+            downloadInstall();
+        }
+    }
+
+    private IFileModel getApkFile(FileEntry fileEntry) {
+        if (fileEntry == null) {
+            return null;
+        }
+        return fileModelFactory.createFileModel(fileEntry);
+    }
+
+    private void swapFileEntriesPresenter(IView view, IFileEntryModel fileEntryModel) {
+        if (fileEntriesListPresenter != null) {
+            fileEntriesListPresenter.onPause();
+        }
+        fileEntriesListPresenter = new FileEntriesListPresenter(presenter -> {}, apkConfig,
+                fileEntryModel);
+        fileEntriesListPresenter.onResume();
+        fileEntriesListPresenter.attachView(view);
+    }
+
 }

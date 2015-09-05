@@ -8,7 +8,15 @@ import com.yuantiku.siphon.helper.ZhenguanyuPathHelper;
  */
 public class DownloadApkTask extends DownloadTask {
 
+    private FileEntry fileEntry;
+
     DownloadApkTask(FileEntry fileEntry) {
-        super(ZhenguanyuPathHelper.create(fileEntry), ZhenguanyuPathHelper.createCachePath(fileEntry));
+        super(ZhenguanyuPathHelper.create(fileEntry), ZhenguanyuPathHelper
+                .createCachePath(fileEntry));
+        this.fileEntry = fileEntry;
+    }
+
+    public FileEntry getFileEntry() {
+        return fileEntry;
     }
 }

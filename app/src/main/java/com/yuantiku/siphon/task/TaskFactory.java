@@ -1,6 +1,7 @@
 package com.yuantiku.siphon.task;
 
 import com.yuantiku.siphon.data.FileEntry;
+import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 
 /**
  * Created by wanghb on 15/8/20.
@@ -12,8 +13,8 @@ public class TaskFactory implements ITaskFactory {
     }
 
     @Override
-    public SyncTask createSyncTask(String dir) {
-        return new SyncTask(dir);
+    public SyncTask createSyncTask(ApkConfig apkConfig) {
+        return new SyncTask(apkConfig);
     }
 
     @Override
