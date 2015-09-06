@@ -153,9 +153,11 @@ public class HomePresenter extends BasePresenter {
 
     private void onSyncSuccess(ApkConfig apkConfig, List<FileEntry> fileEntries) {
         fileEntryModel.updateAll(fileEntries, apkConfig);
-        fileEntry = fileEntries.get(0);
-        if (installAuto) {
-            downloadInstall();
+        if (!fileEntries.isEmpty()) {
+            fileEntry = fileEntries.get(0);
+            if (installAuto) {
+                downloadInstall();
+            }
         }
     }
 
