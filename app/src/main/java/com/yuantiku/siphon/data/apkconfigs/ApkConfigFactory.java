@@ -1,5 +1,6 @@
 package com.yuantiku.siphon.data.apkconfigs;
 
+import android.app.Application;
 import android.content.Context;
 
 import com.google.gson.reflect.TypeToken;
@@ -16,11 +17,21 @@ import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * Created by wanghb on 15/8/23.
  */
 public class ApkConfigFactory {
-    public static List<ApkConfig> load() throws IOException {
+
+    private Application application;
+
+    @Inject
+    public ApkConfigFactory(Application application) {
+        this.application = application;
+    }
+
+    public List<ApkConfig> load() throws IOException {
         Context context = ApplicationFactory.getApplication();
         InputStream inputStream = context.getResources().openRawResource(R.raw.apk_configs);
         List<ApkConfig> list = JsonHelper.jsonList(IOUtils.toString(inputStream),
@@ -32,7 +43,7 @@ public class ApkConfigFactory {
         return list;
     }
 
-    public static ApkConfig getDefault() {
+    public ApkConfig getDefault() {
         try {
             Hawk.init(ApplicationFactory.getApplication())
                     .setEncryptionMethod(HawkBuilder.EncryptionMethod.NO_ENCRYPTION)
@@ -50,7 +61,7 @@ public class ApkConfigFactory {
         return apkConfig;
     }
 
-    public static void setDefault(ApkConfig apkConfig) {
+    public void setDefault(ApkConfig apkConfig) {
         Hawk.put(ApkConfig.class.getName(), apkConfig);
     }
 }

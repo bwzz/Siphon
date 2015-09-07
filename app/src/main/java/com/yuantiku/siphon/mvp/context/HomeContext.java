@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.yuantiku.siphon.R;
+import com.yuantiku.siphon.app.ApplicationComponentProvider;
 import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.helper.ApkHelper;
@@ -23,6 +24,8 @@ import com.yuantiku.siphon.mvp.presenter.HomePresenter;
 import com.yuantiku.siphon.mvp.presenter.IPresenterManager;
 import com.yuantiku.siphon.mvp.viewmodel.HomeViewModel;
 
+import javax.inject.Inject;
+
 import bwzz.activityCallback.LaunchArgument;
 
 /**
@@ -33,8 +36,12 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
 
     private HomePresenter homePresenter;
 
+    @Inject
+    ApkConfigModel apkConfigModel;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        ApplicationComponentProvider.getApplicationComponent().inject(this);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -43,7 +50,7 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
     protected void createPresenters(@NonNull IPresenterManager presenterManager) {
         super.createPresenters(presenterManager);
         homePresenter = new HomePresenter(presenterManager,
-                ApkConfigModel.getDefaultApkConfigModel(),
+                apkConfigModel,
                 new FileEntryModel(getActivity()));
         homePresenter.setHandler(this);
     }
@@ -94,8 +101,10 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
 
     @Override
     public void onIcon() {
+        Bundle bundle = new Bundle();
+        bundle.putString(Key.ApkConfig, JsonHelper.json(apkConfigModel.getDefault()));
         LaunchArgument argument = LaunchHelper.createArgument(FileEntriesContext.class,
-                getActivity());
+                getActivity(), bundle);
         launch(argument);
     }
 

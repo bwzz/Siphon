@@ -2,13 +2,19 @@ package com.yuantiku.siphon.app;
 
 import android.app.Application;
 
+import com.yuantiku.siphon.dagger.component.ApplicationComponent;
+import com.yuantiku.siphon.dagger.component.DaggerApplicationComponent;
+import com.yuantiku.siphon.dagger.module.ApplicationModule;
+
 import im.fir.sdk.FIR;
 
 /**
  * Created by wanghb on 15/8/21.
  */
 public class Siphon extends Application {
-    static Application application;
+    static Siphon application;
+
+    private ApplicationComponent applicationComponent;
 
     @Override
     public void onCreate() {
@@ -16,6 +22,17 @@ public class Siphon extends Application {
         FIR.init(this);
         super.onCreate();
         FIR.setDebug(false);
+        this.initializeInjector();
+    }
+
+    private void initializeInjector() {
+        this.applicationComponent = DaggerApplicationComponent.builder()
+                .applicationModule(new ApplicationModule(this))
+                .build();
+    }
+
+    ApplicationComponent getApplicationComponent() {
+        return this.applicationComponent;
     }
 
 }

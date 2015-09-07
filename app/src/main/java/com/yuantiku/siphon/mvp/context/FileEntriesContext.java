@@ -6,10 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.data.FileEntry;
+import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.helper.ApkHelper;
+import com.yuantiku.siphon.helper.JsonHelper;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
-import com.yuantiku.siphon.mvp.model.ApkConfigModel;
 import com.yuantiku.siphon.mvp.model.FileEntryModel;
 import com.yuantiku.siphon.mvp.model.FileModelFactory;
 import com.yuantiku.siphon.mvp.presenter.FileEntriesListPresenter;
@@ -23,10 +25,18 @@ public class FileEntriesContext extends BaseContext implements FileEntriesViewMo
     private FileEntriesListPresenter fileEntriesListPresenter;
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
     protected void createPresenters(@NonNull IPresenterManager presenterManager) {
         super.createPresenters(presenterManager);
+        ApkConfig apkConfig = JsonHelper.json(getArguments().getString(Key.ApkConfig),
+                ApkConfig.class);
         fileEntriesListPresenter = new FileEntriesListPresenter(presenterManager,
-                ApkConfigModel.getDefaultApkConfigModel().getDefault(),
+                apkConfig,
                 new FileEntryModel(getActivity()));
     }
 
