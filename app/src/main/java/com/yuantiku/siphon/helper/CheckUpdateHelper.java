@@ -3,7 +3,6 @@ package com.yuantiku.siphon.helper;
 import android.content.Context;
 import android.content.Intent;
 
-import com.yuantiku.siphon.app.ApplicationFactory;
 import com.yuantiku.siphon.service.CheckUpdateService;
 
 import im.fir.sdk.FIR;
@@ -22,18 +21,18 @@ public class CheckUpdateHelper {
         void onError(Exception e);
     }
 
-    public static void checkUpdateBackgound(Context context) {
+    public static void checkUpdateBackground(Context context) {
         context.startService(new Intent(context, CheckUpdateService.class));
     }
 
-    public static void checkUpdate(CheckUpdateCallback checkUpdateCallback) {
+    public static void checkUpdate(Context context, CheckUpdateCallback checkUpdateCallback) {
         FIR.checkForUpdateInFIR("24f1dc375cf795bf73d26d57fc73d17d", new VersionCheckCallback() {
             @Override
             public void onSuccess(AppVersion appVersion, boolean b) {
                 if (checkUpdateCallback == null) {
                     return;
                 }
-                if (AppHelper.getVersionCode(ApplicationFactory.getApplication()) < appVersion
+                if (AppHelper.getVersionCode(context) < appVersion
                         .getVersionCode()) {
                     checkUpdateCallback.onNewVersion(appVersion);
                 } else {

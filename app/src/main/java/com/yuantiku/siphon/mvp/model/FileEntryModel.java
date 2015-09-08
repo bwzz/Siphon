@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * Created by wanghb on 15/9/4.
  */
@@ -39,6 +41,7 @@ public class FileEntryModel implements IFileEntryModel {
 
     private ContentResolver contentResolver;
 
+    @Inject
     public FileEntryModel(Context context) {
         this.contentResolver = context.getContentResolver();
     }

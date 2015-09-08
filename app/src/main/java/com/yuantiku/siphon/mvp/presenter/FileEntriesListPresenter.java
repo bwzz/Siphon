@@ -1,5 +1,7 @@
 package com.yuantiku.siphon.mvp.presenter;
 
+import bwzz.taskmanager.TaskException;
+
 import com.squareup.otto.Bus;
 import com.yuantiku.siphon.data.FileEntry;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
@@ -7,14 +9,12 @@ import com.yuantiku.siphon.factory.EmptyObjectFactory;
 import com.yuantiku.siphon.mvp.imodel.IFileEntryModel;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.imodel.IFileModelFactory;
-import com.yuantiku.siphon.mvp.model.FileModelFactory;
-import com.yuantiku.siphon.otto.BusFactory;
 import com.yuantiku.siphon.task.DownloadHelper;
 import com.yuantiku.siphon.task.SyncHelper;
 
 import java.util.List;
 
-import bwzz.taskmanager.TaskException;
+import javax.inject.Inject;
 
 /**
  * Created by wanghb on 15/9/5.
@@ -42,7 +42,20 @@ public class FileEntriesListPresenter extends BasePresenter {
         void installApkFile(IFileModel apkFile);
     }
 
-    private Bus bus = BusFactory.getBus();
+    @Inject
+    Bus bus;
+
+    @Inject
+    SyncHelper syncHelper;
+
+    @Inject
+    DownloadHelper downloadHelper;
+
+    @Inject
+    IFileEntryModel fileEntryModel;
+
+    @Inject
+    IFileModelFactory fileModelFactory;
 
     private ApkConfig apkConfig;
 
@@ -50,22 +63,9 @@ public class FileEntriesListPresenter extends BasePresenter {
 
     private IHandler handler = EmptyObjectFactory.createEmptyObject(IHandler.class);
 
-    private IFileModelFactory fileModelFactory = FileModelFactory.getDefault();
-
-    private IFileEntryModel fileEntryModel;
-
-    private SyncHelper syncHelper;
-
-    private DownloadHelper downloadHelper;
-
-    public FileEntriesListPresenter(IPresenterManager presenterManager,
-            ApkConfig apkConfig,
-            IFileEntryModel fileEntryModel) {
+    FileEntriesListPresenter(IPresenterManager presenterManager, ApkConfig apkConfig) {
         super(presenterManager);
         this.apkConfig = apkConfig;
-        this.fileEntryModel = fileEntryModel;
-        syncHelper = new SyncHelper(bus);
-        downloadHelper = new DownloadHelper(bus);
     }
 
     @Override

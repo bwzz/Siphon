@@ -4,21 +4,21 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import bwzz.taskmanager.TaskException;
+
 import com.koushikdutta.ion.Ion;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.yuantiku.siphon.R;
-import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.data.FileEntry;
+import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.factory.EmptyObjectFactory;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.presenter.HomePresenter;
 
 import java.util.List;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import bwzz.taskmanager.TaskException;
 
 /**
  * Created by wanghb on 15/9/3.
@@ -32,7 +32,7 @@ public class HomeViewModel extends BaseViewModel implements HomePresenter.IView 
 
         void onDownloadAndInstall();
 
-        void onIcon();
+        void onIcon(ApkConfig apkConfig);
     }
 
     @Bind(R.id.sync)
@@ -72,6 +72,7 @@ public class HomeViewModel extends BaseViewModel implements HomePresenter.IView 
                     apkConfig.getName() + apkConfig.getType(), fileEntry.name,
                     fileEntry.date));
         }
+        icon.setOnClickListener(v -> handler.onIcon(apkConfig));
     }
 
     @Override
@@ -141,7 +142,7 @@ public class HomeViewModel extends BaseViewModel implements HomePresenter.IView 
     }
 
     @OnClick({
-            R.id.one_step, R.id.sync, R.id.download_install, R.id.icon
+            R.id.one_step, R.id.sync, R.id.download_install
     })
     public void onClicked(View view) {
         switch (view.getId()) {
@@ -153,9 +154,6 @@ public class HomeViewModel extends BaseViewModel implements HomePresenter.IView 
                 break;
             case R.id.download_install:
                 handler.onDownloadAndInstall();
-                break;
-            case R.id.icon:
-                handler.onIcon();
                 break;
         }
     }

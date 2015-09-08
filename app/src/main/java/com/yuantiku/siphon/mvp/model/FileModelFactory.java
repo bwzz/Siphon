@@ -7,13 +7,16 @@ import com.yuantiku.siphon.mvp.imodel.IFileModelFactory;
 
 import java.io.File;
 
+import javax.inject.Inject;
+
 /**
  * Created by wanghb on 15/9/3.
  */
 public class FileModelFactory implements IFileModelFactory {
 
-    public static IFileModelFactory getDefault() {
-        return new FileModelFactory();
+    @Inject
+    FileModelFactory() {
+
     }
 
     @Override

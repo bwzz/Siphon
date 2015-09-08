@@ -1,5 +1,8 @@
 package com.yuantiku.siphon.task;
 
+import bwzz.taskmanager.ITask;
+import bwzz.taskmanager.TaskException;
+
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.yuantiku.siphon.data.FileEntry;
@@ -10,8 +13,7 @@ import com.yuantiku.siphon.otto.taskevent.TaskFinishEvent;
 import com.yuantiku.siphon.otto.taskevent.TaskProgressEvent;
 import com.yuantiku.siphon.otto.taskevent.TaskStartEvent;
 
-import bwzz.taskmanager.ITask;
-import bwzz.taskmanager.TaskException;
+import javax.inject.Inject;
 
 /**
  * Created by wanghb on 15/9/5.
@@ -28,16 +30,16 @@ public class DownloadHelper {
         void onDownloadFailed(FileEntry fileEntry, TaskException e);
     }
 
-    private Bus bus;
+    private final Bus bus;
+
+    private final ITaskFactory taskFactory;
 
     private IHandler handler = EmptyObjectFactory.createEmptyObject(IHandler.class);
 
-    private ITaskFactory taskFactory = TaskFactory.getDefault();
-
-    private FileEntry fileEntry;
-
-    public DownloadHelper(Bus bus) {
+    @Inject
+    DownloadHelper(Bus bus, ITaskFactory taskFactory) {
         this.bus = bus;
+        this.taskFactory = taskFactory;
     }
 
     public void register() {
@@ -49,7 +51,6 @@ public class DownloadHelper {
     }
 
     public void startDownload(FileEntry fileEntry, IHandler handler) {
-        this.fileEntry = fileEntry;
         this.handler = EmptyObjectFactory.ensureObject(handler, IHandler.class);
         bus.post(new SubmitTaskEvent(taskFactory.createDownloadTask(fileEntry)));
     }

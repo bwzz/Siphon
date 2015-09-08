@@ -1,38 +1,45 @@
 package com.yuantiku.siphon.task;
 
+import android.content.Context;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
-
-import com.koushikdutta.async.future.Future;
-import com.koushikdutta.ion.Ion;
-import com.yuantiku.siphon.app.ApplicationFactory;
-import com.yuantiku.siphon.mvp.model.FileModelFactory;
-import com.yuantiku.siphon.mvp.imodel.IFileModel;
-
-import java.io.File;
 
 import bwzz.taskmanager.AbstractTask;
 import bwzz.taskmanager.ITaskReporter;
 import bwzz.taskmanager.TaskException;
 import bwzz.taskmanager.TaskReportHandler;
 
+import com.koushikdutta.async.future.Future;
+import com.koushikdutta.ion.Ion;
+import com.yuantiku.siphon.mvp.imodel.IFileModel;
+import com.yuantiku.siphon.mvp.imodel.IFileModelFactory;
+
+import java.io.File;
+
 /**
  * Created by wanghb on 15/8/21.
  */
 public class DownloadTask extends AbstractTask<IFileModel> {
-    private String target;
-    private String source;
+    private final Context context;
+    private final String target;
+    private final String source;
     private Future<File> future;
+    private final IFileModelFactory fileModelFactory;
 
-    public DownloadTask(@Nullable String source, @Nullable String target) {
-        this(source, target, new TaskReportHandler(Looper.getMainLooper()));
+    DownloadTask(@NonNull IFileModelFactory fileModelFactory, @NonNull Context context,
+            @NonNull String source, @NonNull String target) {
+        this(fileModelFactory, context, source, target, new TaskReportHandler(
+                Looper.getMainLooper()));
     }
 
-    public DownloadTask(@Nullable String source, @Nullable String target, TaskReportHandler handler) {
+    DownloadTask(@NonNull IFileModelFactory fileModelFactory, @NonNull Context context,
+            @NonNull String source, @NonNull String target, TaskReportHandler handler) {
         super(source, handler);
+        this.context = context;
         this.source = source;
         this.target = target;
+        this.fileModelFactory = fileModelFactory;
     }
 
     @Override
@@ -46,9 +53,8 @@ public class DownloadTask extends AbstractTask<IFileModel> {
     @Override
     public void run(@Nullable ITaskReporter taskReporter) {
         future = Ion
-                .with(ApplicationFactory.getApplication())
+                .with(context)
                 .load(source)
-                .setLogging("DownloadTask", Log.DEBUG)
                 .progress(
                         (downloaded, total) -> taskReporter.onTaskProgress(this,
                                 (float) (downloaded * 100d / total)))
@@ -58,7 +64,7 @@ public class DownloadTask extends AbstractTask<IFileModel> {
                             if (e != null) {
                                 setTaskException(TaskException.wrap(e));
                             }
-                            IFileModel fileModel = new FileModelFactory().createFileModel(result
+                            IFileModel fileModel = fileModelFactory.createFileModel(result
                                     .getAbsolutePath());
                             setResult(fileModel);
                             taskReporter.onTaskFinish(this);

@@ -1,5 +1,10 @@
 package com.yuantiku.siphon.mvp.presenter;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+
+import bwzz.taskmanager.TaskException;
+
 import com.yuantiku.siphon.data.FileEntry;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.factory.EmptyObjectFactory;
@@ -7,13 +12,12 @@ import com.yuantiku.siphon.mvp.imodel.IApkConfigModel;
 import com.yuantiku.siphon.mvp.imodel.IFileEntryModel;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.imodel.IFileModelFactory;
-import com.yuantiku.siphon.mvp.model.FileModelFactory;
 import com.yuantiku.siphon.task.DownloadHelper;
 import com.yuantiku.siphon.task.SyncHelper;
 
 import java.util.List;
 
-import bwzz.taskmanager.TaskException;
+import javax.inject.Inject;
 
 /**
  * Created by wanghb on 15/9/3.
@@ -28,30 +32,35 @@ public class HomePresenter extends BasePresenter {
         void installApkFile(IFileModel apkFile);
     }
 
+    @Inject
+    ApkConfig apkConfig;
+
+    @Inject
+    IApkConfigModel apkConfigModel;
+
+    @Inject
+    IFileEntryModel fileEntryModel;
+
+    @Inject
+    IFileModelFactory fileModelFactory;
+
     private boolean installAuto;
 
     private FileEntry fileEntry;
-
-    private ApkConfig apkConfig;
 
     private IView view = EmptyObjectFactory.createEmptyObject(IView.class);
 
     private IHandler handler = EmptyObjectFactory.createEmptyObject(IHandler.class);
 
-    private IFileModelFactory fileModelFactory = FileModelFactory.getDefault();
-
-    private IApkConfigModel apkConfigModel;
-
-    private IFileEntryModel fileEntryModel;
-
     private FileEntriesListPresenter fileEntriesListPresenter;
 
-    public HomePresenter(IPresenterManager presenterManager, IApkConfigModel apkConfigModel,
-            IFileEntryModel fileEntryModel) {
+    HomePresenter(IPresenterManager presenterManager) {
         super(presenterManager);
-        this.apkConfigModel = apkConfigModel;
-        this.fileEntryModel = fileEntryModel;
-        apkConfig = apkConfigModel.getDefault();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         fileEntry = fileEntryModel.getLatest(apkConfig);
     }
 
@@ -172,8 +181,8 @@ public class HomePresenter extends BasePresenter {
         if (fileEntriesListPresenter != null) {
             fileEntriesListPresenter.onPause();
         }
-        fileEntriesListPresenter = new FileEntriesListPresenter(presenter -> {}, apkConfig,
-                fileEntryModel);
+        fileEntriesListPresenter = PresenterFactory.createFileEntriesListPresenter(presenter -> {},
+                apkConfig);
         fileEntriesListPresenter.onResume();
         fileEntriesListPresenter.attachView(view);
     }

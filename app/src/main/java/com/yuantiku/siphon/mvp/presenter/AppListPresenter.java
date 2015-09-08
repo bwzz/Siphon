@@ -1,8 +1,7 @@
 package com.yuantiku.siphon.mvp.presenter;
 
-import com.yuantiku.siphon.app.ApplicationComponentProvider;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
-import com.yuantiku.siphon.mvp.model.ApkConfigModel;
+import com.yuantiku.siphon.mvp.imodel.IApkConfigModel;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,12 +17,12 @@ public class AppListPresenter extends BasePresenter {
 
         void renderLoadListFailed();
     }
-    @Inject
-    ApkConfigModel apkConfigModel;
 
-    public AppListPresenter(IPresenterManager presenterManager) {
+    @Inject
+    IApkConfigModel apkConfigModel;
+
+    AppListPresenter(IPresenterManager presenterManager) {
         super(presenterManager);
-        ApplicationComponentProvider.getApplicationComponent().inject(this);
     }
 
     public AppListPresenter attachView(IView view) {

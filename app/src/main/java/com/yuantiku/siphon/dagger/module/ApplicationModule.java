@@ -1,19 +1,30 @@
 package com.yuantiku.siphon.dagger.module;
 
 import android.app.Application;
+import android.content.Context;
 
+import com.squareup.otto.Bus;
+import com.squareup.otto.ThreadEnforcer;
 import com.yuantiku.siphon.app.Siphon;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
+import com.yuantiku.siphon.mvp.imodel.IApkConfigModel;
+import com.yuantiku.siphon.mvp.imodel.IFileEntryModel;
+import com.yuantiku.siphon.mvp.imodel.IFileModelFactory;
 import com.yuantiku.siphon.mvp.model.ApkConfigModel;
-
-import javax.inject.Singleton;
+import com.yuantiku.siphon.mvp.model.FileEntryModel;
+import com.yuantiku.siphon.mvp.model.FileModelFactory;
+import com.yuantiku.siphon.task.ITaskFactory;
+import com.yuantiku.siphon.task.TaskFactory;
 
 import dagger.Module;
 import dagger.Provides;
 
+import javax.inject.Singleton;
+
 /**
  * Created by wanghb on 15/9/7.
  */
+@Singleton
 @Module
 public class ApplicationModule {
     private final Siphon siphon;
@@ -29,7 +40,40 @@ public class ApplicationModule {
     }
 
     @Provides
+    Context provideContext() {
+        return this.siphon;
+    }
+
+    @Provides
     ApkConfig provideDefaultApkConfig(ApkConfigModel apkConfigModel) {
         return apkConfigModel.getDefault();
+    }
+
+    @Provides
+    IApkConfigModel provideApkConfigModel(ApkConfigModel apkConfigModel) {
+        return apkConfigModel;
+    }
+
+    @Singleton
+    @Provides
+    Bus provideBus() {
+        return new Bus(ThreadEnforcer.ANY);
+    }
+
+    @Singleton
+    @Provides
+    ITaskFactory provideTaskFactory(TaskFactory taskFactory) {
+        return taskFactory;
+    }
+
+    @Provides
+    IFileEntryModel provideFileEntryModel(FileEntryModel fileEntryModel) {
+        return fileEntryModel;
+    }
+
+    @Singleton
+    @Provides
+    IFileModelFactory provideFileModelFactory(FileModelFactory fileModelFactory) {
+        return fileModelFactory;
     }
 }

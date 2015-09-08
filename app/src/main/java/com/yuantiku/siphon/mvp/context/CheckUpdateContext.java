@@ -13,6 +13,7 @@ import com.yuantiku.siphon.helper.JsonHelper;
 import com.yuantiku.siphon.helper.PathHelper;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.presenter.CheckUpdatePresenter;
+import com.yuantiku.siphon.mvp.presenter.PresenterFactory;
 import com.yuantiku.siphon.mvp.viewmodel.CheckUpdateViewModel;
 
 import im.fir.sdk.version.AppVersion;
@@ -30,7 +31,7 @@ public class CheckUpdateContext extends BaseContext implements CheckUpdateViewMo
         CheckUpdateViewModel checkUpdateViewModel = new CheckUpdateViewModel(this);
         View view = checkUpdateViewModel.onCreateView(inflater, container, savedInstanceState);
 
-        checkUpdatePresenter = new CheckUpdatePresenter(this,
+        checkUpdatePresenter = PresenterFactory.createCheckUpdatePresenter(this,
                 AppHelper.getAppName(getActivity()),
                 PathHelper.getCacheDir(getActivity()).getPath());
         checkUpdatePresenter.attachView(checkUpdateViewModel);

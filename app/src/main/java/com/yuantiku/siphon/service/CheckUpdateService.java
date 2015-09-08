@@ -6,17 +6,18 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import com.yuantiku.siphon.constant.Key;
-import com.yuantiku.siphon.helper.CheckUpdateHelper;
-import com.yuantiku.siphon.helper.JsonHelper;
-import com.yuantiku.siphon.mvp.context.CheckUpdateContext;
-
 import bwzz.activityCallback.ILauncher;
 import bwzz.activityCallback.LaunchArgument;
 import bwzz.activityCallback.LaunchHelper;
 import bwzz.activityReuse.ContainerActivity;
 import bwzz.activityReuse.FragmentPackage;
 import bwzz.activityReuse.ReuseIntentBuilder;
+
+import com.yuantiku.siphon.constant.Key;
+import com.yuantiku.siphon.helper.CheckUpdateHelper;
+import com.yuantiku.siphon.helper.JsonHelper;
+import com.yuantiku.siphon.mvp.context.CheckUpdateContext;
+
 import im.fir.sdk.version.AppVersion;
 
 /**
@@ -32,7 +33,7 @@ public class CheckUpdateService extends Service implements CheckUpdateHelper.Che
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        CheckUpdateHelper.checkUpdate(this);
+        CheckUpdateHelper.checkUpdate(this, this);
         return START_NOT_STICKY;
     }
 

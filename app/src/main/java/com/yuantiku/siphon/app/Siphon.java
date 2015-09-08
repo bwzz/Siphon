@@ -5,6 +5,7 @@ import android.app.Application;
 import com.yuantiku.siphon.dagger.component.ApplicationComponent;
 import com.yuantiku.siphon.dagger.component.DaggerApplicationComponent;
 import com.yuantiku.siphon.dagger.module.ApplicationModule;
+import com.yuantiku.siphon.mvp.presenter.PresenterFactory;
 
 import im.fir.sdk.FIR;
 
@@ -23,6 +24,7 @@ public class Siphon extends Application {
         super.onCreate();
         FIR.setDebug(false);
         this.initializeInjector();
+        PresenterFactory.initApplicationComponent(applicationComponent);
     }
 
     private void initializeInjector() {

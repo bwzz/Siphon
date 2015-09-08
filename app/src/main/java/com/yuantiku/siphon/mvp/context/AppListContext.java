@@ -12,6 +12,7 @@ import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.helper.JsonHelper;
 import com.yuantiku.siphon.mvp.presenter.AppListPresenter;
+import com.yuantiku.siphon.mvp.presenter.PresenterFactory;
 import com.yuantiku.siphon.mvp.viewmodel.AppListViewModel;
 
 /**
@@ -24,7 +25,8 @@ public class AppListContext extends BaseContext implements AppListViewModel.IHan
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         AppListViewModel appListViewModel = new AppListViewModel(this);
         View view = appListViewModel.onCreateView(inflater, container, savedInstanceState);
-        AppListPresenter appListPresenter = new AppListPresenter(this);
+
+        AppListPresenter appListPresenter = PresenterFactory.createAppListPresenter(this);
         appListPresenter.attachView(appListViewModel);
         return view;
     }

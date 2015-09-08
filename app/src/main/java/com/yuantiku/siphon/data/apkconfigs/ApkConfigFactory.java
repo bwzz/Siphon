@@ -1,7 +1,6 @@
 package com.yuantiku.siphon.data.apkconfigs;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.google.gson.reflect.TypeToken;
 import com.orhanobut.hawk.Hawk;
@@ -10,8 +9,6 @@ import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.app.ApplicationFactory;
 import com.yuantiku.siphon.helper.JsonHelper;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
@@ -19,12 +16,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.IOUtils;
+
 /**
  * Created by wanghb on 15/8/23.
  */
 public class ApkConfigFactory {
 
-    private Application application;
+    private final Application application;
 
     @Inject
     public ApkConfigFactory(Application application) {
@@ -32,8 +31,7 @@ public class ApkConfigFactory {
     }
 
     public List<ApkConfig> load() throws IOException {
-        Context context = ApplicationFactory.getApplication();
-        InputStream inputStream = context.getResources().openRawResource(R.raw.apk_configs);
+        InputStream inputStream = application.getResources().openRawResource(R.raw.apk_configs);
         List<ApkConfig> list = JsonHelper.jsonList(IOUtils.toString(inputStream),
                 new TypeToken<List<ApkConfig>>() {
                 }.getType());
@@ -45,7 +43,7 @@ public class ApkConfigFactory {
 
     public ApkConfig getDefault() {
         try {
-            Hawk.init(ApplicationFactory.getApplication())
+            Hawk.init(application)
                     .setEncryptionMethod(HawkBuilder.EncryptionMethod.NO_ENCRYPTION)
                     .build();
             return Hawk.get(ApkConfig.class.getName(), load().get(0));

@@ -1,5 +1,8 @@
 package com.yuantiku.siphon.task;
 
+import bwzz.taskmanager.ITask;
+import bwzz.taskmanager.TaskException;
+
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.yuantiku.siphon.data.FileEntry;
@@ -11,8 +14,7 @@ import com.yuantiku.siphon.otto.taskevent.TaskStartEvent;
 
 import java.util.List;
 
-import bwzz.taskmanager.ITask;
-import bwzz.taskmanager.TaskException;
+import javax.inject.Inject;
 
 /**
  * Created by wanghb on 15/9/5.
@@ -27,16 +29,16 @@ public class SyncHelper {
         void onSyncFailed(ApkConfig apkConfig, TaskException e);
     }
 
-    private Bus bus;
+    private final Bus bus;
+
+    private final ITaskFactory taskFactory;
 
     private IHandler handler = EmptyObjectFactory.createEmptyObject(IHandler.class);
 
-    private ITaskFactory taskFactory = TaskFactory.getDefault();
-
-    private ApkConfig apkConfig;
-
-    public SyncHelper(Bus bus) {
+    @Inject
+    SyncHelper(Bus bus, ITaskFactory taskFactory) {
         this.bus = bus;
+        this.taskFactory = taskFactory;
     }
 
     public void register() {
@@ -48,7 +50,6 @@ public class SyncHelper {
     }
 
     public void startSync(ApkConfig apkConfig, IHandler iHandler) {
-        this.apkConfig = apkConfig;
         this.handler = iHandler;
         bus.post(new SubmitTaskEvent(taskFactory.createSyncTask(apkConfig)));
     }

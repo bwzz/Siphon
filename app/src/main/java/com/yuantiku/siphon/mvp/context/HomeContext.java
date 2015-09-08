@@ -10,23 +10,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import bwzz.activityCallback.LaunchArgument;
+
 import com.yuantiku.siphon.R;
-import com.yuantiku.siphon.app.ApplicationComponentProvider;
 import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.helper.ApkHelper;
 import com.yuantiku.siphon.helper.JsonHelper;
 import com.yuantiku.siphon.helper.LaunchHelper;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
-import com.yuantiku.siphon.mvp.model.ApkConfigModel;
-import com.yuantiku.siphon.mvp.model.FileEntryModel;
 import com.yuantiku.siphon.mvp.presenter.HomePresenter;
 import com.yuantiku.siphon.mvp.presenter.IPresenterManager;
+import com.yuantiku.siphon.mvp.presenter.PresenterFactory;
 import com.yuantiku.siphon.mvp.viewmodel.HomeViewModel;
-
-import javax.inject.Inject;
-
-import bwzz.activityCallback.LaunchArgument;
 
 /**
  * Created by wanghb on 15/9/3.
@@ -36,12 +32,8 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
 
     private HomePresenter homePresenter;
 
-    @Inject
-    ApkConfigModel apkConfigModel;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        ApplicationComponentProvider.getApplicationComponent().inject(this);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -49,9 +41,7 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
     @Override
     protected void createPresenters(@NonNull IPresenterManager presenterManager) {
         super.createPresenters(presenterManager);
-        homePresenter = new HomePresenter(presenterManager,
-                apkConfigModel,
-                new FileEntryModel(getActivity()));
+        homePresenter = PresenterFactory.createHomePresenter(presenterManager);
         homePresenter.setHandler(this);
     }
 
@@ -100,9 +90,9 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
     }
 
     @Override
-    public void onIcon() {
+    public void onIcon(ApkConfig apkConfig) {
         Bundle bundle = new Bundle();
-        bundle.putString(Key.ApkConfig, JsonHelper.json(apkConfigModel.getDefault()));
+        bundle.putString(Key.ApkConfig, JsonHelper.json(apkConfig));
         LaunchArgument argument = LaunchHelper.createArgument(FileEntriesContext.class,
                 getActivity(), bundle);
         launch(argument);

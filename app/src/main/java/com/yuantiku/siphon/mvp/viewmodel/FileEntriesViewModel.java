@@ -11,6 +11,8 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import bwzz.taskmanager.TaskException;
+
 import com.yuantiku.siphon.data.FileEntry;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.factory.EmptyObjectFactory;
@@ -22,8 +24,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import bwzz.taskmanager.TaskException;
 
 /**
  * Created by wanghb on 15/9/5.
@@ -37,9 +37,10 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
 
     private IHandler handler = EmptyObjectFactory.createEmptyObject(IHandler.class);
 
-    private FileEntriesAdapter adapter = new FileEntriesAdapter();
+    private final FileEntriesAdapter adapter;
 
-    public FileEntriesViewModel(IHandler handler) {
+    public FileEntriesViewModel(FileModelFactory fileModelFactory, IHandler handler) {
+        adapter = new FileEntriesAdapter(fileModelFactory);
         this.handler = handler;
     }
 
@@ -95,6 +96,12 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
         private List<FileEntry> fileEntries = new LinkedList<>();
 
         private Map<String, View> entry2View = new HashMap<>();
+
+        private final FileModelFactory fileModelFactory;
+
+        public FileEntriesAdapter(FileModelFactory fileModelFactory) {
+            this.fileModelFactory = fileModelFactory;
+        }
 
         public void update(List<FileEntry> fileEntries) {
             this.fileEntries = fileEntries;
@@ -156,7 +163,7 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
             int pad = 30;
             textView.setPadding(pad, pad, pad, pad);
 
-            IFileModel fileModel = FileModelFactory.getDefault().createFileModel(fileEntry);
+            IFileModel fileModel = fileModelFactory.createFileModel(fileEntry);
             textView.setTextColor(fileModel.exists() ? Color.GREEN : Color.BLACK);
 
             String key = (String) textView.getTag();
