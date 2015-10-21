@@ -97,9 +97,27 @@ public class MainActivityFragment extends BaseFragment {
             case R.id.action_select_apk:
                 selectApplication();
                 break;
+            case R.id.action_test_tutor:
+                testTutor();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void testTutor() {
+        Bundle bundle = new Bundle();
+        FragmentPackage fragmentPackage = new FragmentPackage();
+        fragmentPackage.setContainer(android.R.id.content)
+                .setArgument(bundle)
+                .setFragmentClassName(TutorEntryTestFragment.class.getName());
+
+        LaunchArgument argument = ReuseIntentBuilder.build()
+                .activity(ContainerActivity.class)
+                .fragmentPackage(fragmentPackage)
+                .getLaunchArgumentBuilder(getActivity())
+                .get();
+        launch(argument);
     }
 
     private void selectApplication() {
