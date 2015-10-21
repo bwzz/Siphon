@@ -58,7 +58,7 @@ public class SyncTask extends AbstractTask<List<FileEntry>> {
 
     private void setApkConfigForResult(List<FileEntry> fileEntries) {
         for (FileEntry fileEntry : fileEntries) {
-            fileEntry.apkConfig = apkConfig;
+            fileEntry.setApkConfig(apkConfig);
         }
     }
 }

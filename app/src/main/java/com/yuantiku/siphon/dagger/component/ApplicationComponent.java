@@ -1,6 +1,7 @@
 package com.yuantiku.siphon.dagger.component;
 
 import com.yuantiku.siphon.dagger.module.ApplicationModule;
+import com.yuantiku.siphon.factory.SingletonFactory;
 import com.yuantiku.siphon.mvp.context.FileEntriesContext;
 import com.yuantiku.siphon.mvp.presenter.AppListPresenter;
 import com.yuantiku.siphon.mvp.presenter.CheckUpdatePresenter;
@@ -8,9 +9,9 @@ import com.yuantiku.siphon.mvp.presenter.FileEntriesListPresenter;
 import com.yuantiku.siphon.mvp.presenter.HomePresenter;
 import com.yuantiku.siphon.service.WorkService;
 
-import dagger.Component;
-
 import javax.inject.Singleton;
+
+import dagger.Component;
 
 /**
  * Created by wanghb on 15/9/7.
@@ -33,4 +34,5 @@ public interface ApplicationComponent {
     // endregion
     void inject(FileEntriesContext fileEntriesContext);
 
+    void inject(SingletonFactory singletonFactory);
 }

@@ -4,11 +4,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import bwzz.taskmanager.TaskException;
-
 import com.koushikdutta.ion.Ion;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.yuantiku.siphon.R;
@@ -19,6 +14,11 @@ import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.presenter.HomePresenter;
 
 import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import bwzz.taskmanager.TaskException;
 
 /**
  * Created by wanghb on 15/9/3.
@@ -105,20 +105,20 @@ public class HomeViewModel extends BaseViewModel implements HomePresenter.IView 
     @Override
     public void renderDownloadStart(FileEntry fileEntry) {
         setViewStatus(false);
-        ApkConfig apkConfig = fileEntry.apkConfig;
+        ApkConfig apkConfig = fileEntry.getApkConfig();
         showStatus("开始下载 : " + apkConfig.getName() + apkConfig.getType());
     }
 
     @Override
     public void renderDownloadProgress(FileEntry fileEntry, float percent) {
-        ApkConfig apkConfig = fileEntry.apkConfig;
+        ApkConfig apkConfig = fileEntry.getApkConfig();
         showStatus(String.format("%s\n下载中：%.2f%%\n%s", apkConfig.getName() + apkConfig.getType(),
                 percent, fileEntry.name));
     }
 
     @Override
     public void renderDownloadSuccess(FileEntry fileEntry, IFileModel result) {
-        ApkConfig apkConfig = fileEntry.apkConfig;
+        ApkConfig apkConfig = fileEntry.getApkConfig();
         showStatus("下载完成 : " + apkConfig.getName() + apkConfig.getType() + "\n"
                 + result);
         setViewStatus(true);
