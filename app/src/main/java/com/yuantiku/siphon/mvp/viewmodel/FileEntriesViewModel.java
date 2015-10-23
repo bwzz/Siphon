@@ -2,6 +2,7 @@ package com.yuantiku.siphon.mvp.viewmodel;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +11,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import bwzz.taskmanager.TaskException;
 
 import com.yuantiku.siphon.data.FileEntry;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
@@ -25,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import bwzz.taskmanager.TaskException;
+
 /**
  * Created by wanghb on 15/9/5.
  */
@@ -33,9 +34,13 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
 
     public interface IHandler {
         void clickFileEntry(FileEntry fileEntry);
+
+        void refresh();
     }
 
     private IHandler handler = EmptyObjectFactory.createEmptyObject(IHandler.class);
+
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private final FileEntriesAdapter adapter;
 
@@ -46,10 +51,15 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
+        swipeRefreshLayout = new SwipeRefreshLayout(container.getContext());
         ListView listView = new ListView(container.getContext());
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
-        return listView;
+        swipeRefreshLayout.addView(listView);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            handler.refresh();
+        });
+        return swipeRefreshLayout;
     }
 
     @Override
@@ -59,12 +69,13 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
 
     @Override
     public void renderSyncFailed(ApkConfig apkConfig, TaskException e) {
-
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void renderSyncSuccess(ApkConfig apkConfig, List<FileEntry> fileEntries) {
         adapter.update(fileEntries);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -111,7 +122,7 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
         public void updateItemProgress(FileEntry fileEntry, float progress) {
             TextView textView = getItemView(fileEntry);
             if (textView != null) {
-                textView.setText(fileEntry.name + ":" + progress);
+                textView.setText(fileEntry.name + "\n" + progress);
             }
         }
 
@@ -157,6 +168,7 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
             TextView textView = (TextView) convertView;
             if (textView == null) {
                 textView = new TextView(parent.getContext());
+                textView.setMinLines(3);
             }
             FileEntry fileEntry = (FileEntry) getItem(position);
             textView.setText(fileEntry.name);

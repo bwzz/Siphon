@@ -29,6 +29,8 @@ public class FileEntriesContext extends BaseContext implements FileEntriesViewMo
     @Inject
     FileModelFactory fileModelFactory;
 
+    private ApkConfig apkConfig;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +40,7 @@ public class FileEntriesContext extends BaseContext implements FileEntriesViewMo
     @Override
     protected void createPresenters(@NonNull IPresenterManager presenterManager) {
         super.createPresenters(presenterManager);
-        ApkConfig apkConfig = JsonHelper.json(getArguments().getString(Key.ApkConfig),
+        apkConfig = JsonHelper.json(getArguments().getString(Key.ApkConfig),
                 ApkConfig.class);
         fileEntriesListPresenter = PresenterFactory.createFileEntriesListPresenter(
                 presenterManager, apkConfig);
@@ -50,6 +52,7 @@ public class FileEntriesContext extends BaseContext implements FileEntriesViewMo
         FileEntriesViewModel fileEntriesViewModel = new FileEntriesViewModel(fileModelFactory, this);
         View view = fileEntriesViewModel.onCreateView(inflater, container, savedInstanceState);
         fileEntriesListPresenter.attachView(fileEntriesViewModel);
+        getActivity().setTitle(String.format("%s %s", apkConfig.getName(), apkConfig.getType()));
         return view;
     }
 
@@ -61,5 +64,10 @@ public class FileEntriesContext extends BaseContext implements FileEntriesViewMo
         } else {
             fileEntriesListPresenter.download(null, fileEntry);
         }
+    }
+
+    @Override
+    public void refresh() {
+        fileEntriesListPresenter.sync(null);
     }
 }

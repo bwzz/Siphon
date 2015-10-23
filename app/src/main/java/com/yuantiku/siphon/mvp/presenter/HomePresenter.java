@@ -3,8 +3,6 @@ package com.yuantiku.siphon.mvp.presenter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import bwzz.taskmanager.TaskException;
-
 import com.yuantiku.siphon.data.FileEntry;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.factory.EmptyObjectFactory;
@@ -18,6 +16,8 @@ import com.yuantiku.siphon.task.SyncHelper;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import bwzz.taskmanager.TaskException;
 
 /**
  * Created by wanghb on 15/9/3.
@@ -68,6 +68,7 @@ public class HomePresenter extends BasePresenter {
     public void onResume() {
         super.onResume();
         view.renderApkConfig(apkConfig, fileEntry, getApkFile(fileEntry));
+        updateApkConfig(apkConfig);
     }
 
     @Override
@@ -92,9 +93,6 @@ public class HomePresenter extends BasePresenter {
     }
 
     public void updateApkConfig(ApkConfig apkConfig) {
-        if (this.apkConfig.equals(apkConfig)) {
-            return;
-        }
         this.apkConfig = apkConfig;
         apkConfigModel.setDefault(apkConfig);
 
