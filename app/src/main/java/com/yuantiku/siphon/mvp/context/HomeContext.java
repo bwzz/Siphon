@@ -70,7 +70,7 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         HomeViewModel homeViewModel = new HomeViewModel(view, this);
         homePresenter.attachView(homeViewModel);
@@ -117,6 +117,9 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
                         String acs = data.getStringExtra(Key.ApkConfig);
                         ApkConfig apkConfig = JsonHelper.json(acs, ApkConfig.class);
                         homePresenter.updateApkConfig(apkConfig);
+                        // TODO : view
+                        getActivity().setTitle(String.format("%s %s", apkConfig.getName(),
+                                apkConfig.getType()));
                     }
                     return true;
                 });

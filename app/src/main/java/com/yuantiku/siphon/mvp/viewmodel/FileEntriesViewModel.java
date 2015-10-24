@@ -33,6 +33,7 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
         AdapterView.OnItemClickListener {
 
     public interface IHandler {
+
         void clickFileEntry(FileEntry fileEntry);
 
         void refresh();
@@ -50,7 +51,7 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         swipeRefreshLayout = new SwipeRefreshLayout(container.getContext());
         ListView listView = new ListView(container.getContext());
         listView.setAdapter(adapter);
@@ -59,6 +60,7 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
         swipeRefreshLayout.setOnRefreshListener(() -> {
             handler.refresh();
         });
+        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(true));
         return swipeRefreshLayout;
     }
 
@@ -75,7 +77,7 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
     @Override
     public void renderSyncSuccess(ApkConfig apkConfig, List<FileEntry> fileEntries) {
         adapter.update(fileEntries);
-        swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
     }
 
     @Override

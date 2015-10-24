@@ -25,10 +25,12 @@ import bwzz.taskmanager.TaskException;
 public class HomePresenter extends BasePresenter {
 
     public interface IView extends FileEntriesListPresenter.IView {
+
         void renderApkConfig(ApkConfig apkConfig, FileEntry fileEntry, IFileModel apkFile);
     }
 
     public interface IHandler {
+
         void installApkFile(IFileModel apkFile);
     }
 
@@ -61,7 +63,7 @@ public class HomePresenter extends BasePresenter {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fileEntry = fileEntryModel.getLatest(apkConfig);
+        fileEntryModel.getLatest(apkConfig, fileEntry -> this.fileEntry = fileEntry);
     }
 
     @Override
@@ -96,10 +98,12 @@ public class HomePresenter extends BasePresenter {
         this.apkConfig = apkConfig;
         apkConfigModel.setDefault(apkConfig);
 
-        fileEntry = fileEntryModel.getLatest(apkConfig);
-        view.renderApkConfig(apkConfig, fileEntry, getApkFile(fileEntry));
+        fileEntryModel.getLatest(apkConfig, fileEntry -> {
+            this.fileEntry = fileEntry;
+            view.renderApkConfig(apkConfig, fileEntry, getApkFile(fileEntry));
 
-        swapFileEntriesPresenter(view, fileEntryModel);
+            swapFileEntriesPresenter(view, fileEntryModel);
+        });
     }
 
     public void oneStep() {

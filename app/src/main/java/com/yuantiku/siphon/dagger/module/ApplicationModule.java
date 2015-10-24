@@ -16,10 +16,10 @@ import com.yuantiku.siphon.mvp.model.FileModelFactory;
 import com.yuantiku.siphon.task.ITaskFactory;
 import com.yuantiku.siphon.task.TaskFactory;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
-
-import javax.inject.Singleton;
 
 /**
  * Created by wanghb on 15/9/7.
@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 @Singleton
 @Module
 public class ApplicationModule {
+
     private final Siphon siphon;
 
     public ApplicationModule(Siphon siphon) {
@@ -39,16 +40,19 @@ public class ApplicationModule {
         return this.siphon;
     }
 
+    @Singleton
     @Provides
     Context provideContext() {
         return this.siphon;
     }
 
+    @Singleton
     @Provides
     ApkConfig provideDefaultApkConfig(ApkConfigModel apkConfigModel) {
         return apkConfigModel.getDefault();
     }
 
+    @Singleton
     @Provides
     IApkConfigModel provideApkConfigModel(ApkConfigModel apkConfigModel) {
         return apkConfigModel;
@@ -66,6 +70,7 @@ public class ApplicationModule {
         return taskFactory;
     }
 
+    @Singleton
     @Provides
     IFileEntryModel provideFileEntryModel(FileEntryModel fileEntryModel) {
         return fileEntryModel;

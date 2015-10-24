@@ -1,7 +1,5 @@
 package com.yuantiku.siphon.mvp.presenter;
 
-import bwzz.taskmanager.TaskException;
-
 import com.squareup.otto.Bus;
 import com.yuantiku.siphon.data.FileEntry;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
@@ -15,6 +13,8 @@ import com.yuantiku.siphon.task.SyncHelper;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import bwzz.taskmanager.TaskException;
 
 /**
  * Created by wanghb on 15/9/5.
@@ -39,6 +39,7 @@ public class FileEntriesListPresenter extends BasePresenter {
     }
 
     public interface IHandler {
+
         void installApkFile(IFileModel apkFile);
     }
 
@@ -84,8 +85,7 @@ public class FileEntriesListPresenter extends BasePresenter {
 
     public FileEntriesListPresenter attachView(IView view) {
         this.view = EmptyObjectFactory.ensureObject(view, IView.class);
-        List<FileEntry> fileEntries = fileEntryModel.list(apkConfig);
-        view.renderSyncSuccess(apkConfig, fileEntries);
+        fileEntryModel.list(apkConfig, fileEntries -> view.renderSyncSuccess(apkConfig, fileEntries));
         return this;
     }
 

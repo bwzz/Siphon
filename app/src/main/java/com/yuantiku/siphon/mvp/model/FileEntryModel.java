@@ -9,12 +9,14 @@ import android.database.AbstractCursor;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 
 import com.google.gson.reflect.TypeToken;
 import com.yuantiku.siphon.data.FileEntry;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.helper.JsonHelper;
 import com.yuantiku.siphon.helper.SprinklesHelper;
+import com.yuantiku.siphon.interfaces.ICallback;
 import com.yuantiku.siphon.mvp.imodel.IFileEntryModel;
 
 import java.util.ArrayList;
@@ -60,45 +62,75 @@ public class FileEntryModel implements IFileEntryModel {
 
     @Override
     public void updateAll(List<FileEntry> fileEntries, ApkConfig apkConfig) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(FileEntryApkConfig, JsonHelper.json(apkConfig));
-        contentValues.put(FileEntriesContent, JsonHelper.json(fileEntries));
-        contentResolver.insert(FileEntriesUri, contentValues);
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(FileEntryApkConfig, JsonHelper.json(apkConfig));
+                contentValues.put(FileEntriesContent, JsonHelper.json(fileEntries));
+                contentResolver.insert(FileEntriesUri, contentValues);
+                return null;
+            }
+        }.execute();
     }
 
     @Override
-    public List<FileEntry> list(ApkConfig apkConfig) {
-        List<FileEntry> fileEntries = new ArrayList<>();
-        Cursor cursor = contentResolver.query(FileEntriesUri, null, getApkConfigSelection(),
-                getApkConfigSelectionArgs(apkConfig), null);
-        if (cursor.moveToFirst()) {
-            do {
-                String content = cursor.getString(1);
-                FileEntry fileEntry = JsonHelper.json(content, FileEntry.class);
-                fileEntries.add(fileEntry);
-            } while (cursor.moveToNext());
-        }
-        return fileEntries;
+    public void list(ApkConfig apkConfig, ICallback<List<FileEntry>> callback) {
+        new AsyncTask<Void, Void, List<FileEntry>>() {
+
+            @Override
+            protected List<FileEntry> doInBackground(Void... params) {
+                List<FileEntry> fileEntries = new ArrayList<>();
+                Cursor cursor = contentResolver.query(FileEntriesUri, null, getApkConfigSelection(),
+                        getApkConfigSelectionArgs(apkConfig), null);
+                if (cursor.moveToFirst()) {
+                    do {
+                        String content = cursor.getString(1);
+                        FileEntry fileEntry = JsonHelper.json(content, FileEntry.class);
+                        fileEntries.add(fileEntry);
+                    } while (cursor.moveToNext());
+                }
+                return fileEntries;
+            }
+
+            @Override
+            protected void onPostExecute(List<FileEntry> fileEntries) {
+                super.onPostExecute(fileEntries);
+                if (callback != null) {
+                    callback.onCallback(fileEntries);
+                }
+            }
+        }.execute();
     }
 
     @Override
-    public FileEntry getLatest(ApkConfig apkConfig) {
-        Cursor cursor = contentResolver.query(FileEntryLatestUri, null, getApkConfigSelection(),
-                getApkConfigSelectionArgs(apkConfig), null);
-        if (cursor.moveToFirst()) {
-            String content = cursor.getString(1);
-            FileEntry fileEntry = JsonHelper.json(content, FileEntry.class);
-            return fileEntry;
-        }
-        return null;
-    }
+    public void getLatest(ApkConfig apkConfig, ICallback<FileEntry> callback) {
+        new AsyncTask<Void, Void, FileEntry>() {
+            @Override
+            protected FileEntry doInBackground(Void... params) {
+                Cursor cursor = contentResolver.query(FileEntryLatestUri, null, getApkConfigSelection(),
+                        getApkConfigSelectionArgs(apkConfig), null);
+                if (cursor.moveToFirst()) {
+                    String content = cursor.getString(1);
+                    FileEntry fileEntry = JsonHelper.json(content, FileEntry.class);
+                    return fileEntry;
+                }
+                return null;
+            }
 
-    private static String getApkConfigIdentify(ApkConfig apkConfig) {
-        return String.format("%d-%s", apkConfig.getId(), apkConfig.getType().name());
+            @Override
+            protected void onPostExecute(FileEntry fileEntry) {
+                super.onPostExecute(fileEntry);
+                if (callback != null) {
+                    callback.onCallback(fileEntry);
+                }
+            }
+        }.execute();
     }
 
     private static String[] getApkConfigSelectionArgs(ApkConfig apkConfig) {
-        return new String[] {
+        return new String[]{
                 String.valueOf(apkConfig.getId()), String.valueOf(apkConfig.getType())
         };
     }
@@ -113,8 +145,6 @@ public class FileEntryModel implements IFileEntryModel {
 
         private final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-        private List<FileEntry> fileEntries = new ArrayList<>();
-
         private ContentResolver contentResolver;
 
         @Override
@@ -127,16 +157,23 @@ public class FileEntryModel implements IFileEntryModel {
 
         @Override
         public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
-                String sortOrder) {
+                            String sortOrder) {
+            Object[] vargs = null;
+            if (selectionArgs != null) {
+                vargs = new Object[selectionArgs.length];
+                for (int i = 0; i < selectionArgs.length; ++i) {
+                    vargs[i] = selectionArgs[i];
+                }
+            }
             if (uriMatcher.match(uri) == 1) {
-                FileEntry fileEntry = Query.one(FileEntry.class, selection, selectionArgs).get();
+                FileEntry fileEntry = Query.one(FileEntry.class, selection, vargs).get();
                 List<FileEntry> fileEntries = new LinkedList<>();
                 if (fileEntry != null) {
                     fileEntries.add(fileEntry);
                 }
                 return new FileEntryCursor(fileEntries);
             } else {
-                List<FileEntry> fileEntries = Query.many(FileEntry.class, selection, selectionArgs)
+                List<FileEntry> fileEntries = Query.many(FileEntry.class, selection, vargs)
                         .get().asList();
                 return new FileEntryCursor(fileEntries);
             }
@@ -160,9 +197,10 @@ public class FileEntryModel implements IFileEntryModel {
                 String content = values.getAsString(FileEntriesContent);
                 ApkConfig apkConfig = JsonHelper.json(values.getAsString(FileEntryApkConfig),
                         ApkConfig.class);
+                Object[] vargs = getApkConfigSelectionArgs(apkConfig);
                 ModelList.from(
                         Query.many(FileEntry.class, getApkConfigSelection(),
-                                getApkConfigSelectionArgs(apkConfig)).get()).deleteAll();
+                                vargs).get()).deleteAll();
 
                 List<FileEntry> fileEntries = JsonHelper.jsonList(content,
                         new TypeToken<List<FileEntry>>() {
@@ -207,7 +245,7 @@ public class FileEntryModel implements IFileEntryModel {
 
         @Override
         public String[] getColumnNames() {
-            return new String[] {
+            return new String[]{
                     FileEntryContent
             };
         }
