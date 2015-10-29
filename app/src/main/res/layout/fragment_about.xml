@@ -55,15 +55,31 @@
             android:src="@drawable/wechat"
             android:tint="@android:color/holo_green_light"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/wechat"
+            android:layout_toRightOf="@+id/wechat"
+            android:padding="5dp"
+            android:text="wang-w-ang"/>
+
         <ImageView
             android:id="@+id/qq"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_alignTop="@+id/wechat"
-            android:layout_marginLeft="60dp"
-            android:layout_marginRight="20dp"
+            android:layout_alignLeft="@+id/wechat"
+            android:layout_below="@+id/wechat"
+            android:layout_marginTop="10dp"
             android:layout_toRightOf="@+id/wechat"
             android:src="@drawable/qq"
             android:tint="@android:color/holo_blue_light"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/qq"
+            android:layout_toRightOf="@+id/qq"
+            android:padding="5dp"
+            android:text="点它"/>
     </RelativeLayout>
 </RelativeLayout>

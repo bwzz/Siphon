@@ -10,8 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import bwzz.activityCallback.LaunchArgument;
-
 import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
@@ -24,6 +22,8 @@ import com.yuantiku.siphon.mvp.presenter.HomePresenter;
 import com.yuantiku.siphon.mvp.presenter.IPresenterManager;
 import com.yuantiku.siphon.mvp.presenter.PresenterFactory;
 import com.yuantiku.siphon.mvp.viewmodel.HomeViewModel;
+
+import bwzz.activityCallback.LaunchArgument;
 
 /**
  * Created by wanghb on 15/9/3.
@@ -64,7 +64,7 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
             case R.id.action_test_tutor:
                 testTutor();
                 break;
-            case R.id.action_settings:
+            case R.id.action_about:
                 about();
                 break;
         }

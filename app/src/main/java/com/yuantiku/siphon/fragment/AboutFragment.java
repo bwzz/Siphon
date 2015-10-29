@@ -5,20 +5,29 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.yuantiku.siphon.R;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import bwzz.fragment.BaseFragment;
-
-import com.yuantiku.siphon.R;
 
 /**
  * @author wanghb
  * @date 15/10/29.
  */
 public class AboutFragment extends BaseFragment {
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Nullable
     @Override
@@ -30,8 +39,7 @@ public class AboutFragment extends BaseFragment {
 
     @OnClick(R.id.wechat)
     public void launchWeChat() {
-        // TODO: not work
-        launch("weixin://qr/BnzG3qTEw-m8reC99ykU");
+        Toast.makeText(getActivity(), "如果你知道怎么进入微信聊天，请告诉我", Toast.LENGTH_LONG).show();
     }
 
     @OnClick(R.id.qq)
@@ -43,5 +51,17 @@ public class AboutFragment extends BaseFragment {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
         startActivity(intent);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.add("Github").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        launch("https://github.com/bwzz/Siphon");
+        return super.onOptionsItemSelected(item);
     }
 }

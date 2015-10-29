@@ -3,6 +3,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_check_update">检查更新</string>
     <string name="action_select_apk">选择应用</string>
-    <string name="action_settings">设置</string>
+    <string name="action_about">关于</string>
     <string name="action_test_tutor">测试Tutor</string>
 </resources>
