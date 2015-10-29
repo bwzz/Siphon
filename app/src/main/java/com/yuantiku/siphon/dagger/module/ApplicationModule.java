@@ -46,7 +46,6 @@ public class ApplicationModule {
         return this.siphon;
     }
 
-    @Singleton
     @Provides
     ApkConfig provideDefaultApkConfig(ApkConfigModel apkConfigModel) {
         return apkConfigModel.getDefault();

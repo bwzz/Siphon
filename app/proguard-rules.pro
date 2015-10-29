@@ -18,6 +18,7 @@
 
 #retrolambda
 -dontwarn java.lang.invoke.*
+-dontwarn rx.internal.util.**
 
 #bufferknife
 -keep class butterknife.** { *; }
@@ -38,3 +39,22 @@
     @com.squareup.otto.Subscribe public *;
     @com.squareup.otto.Produce public *;
 }
+
+#retrofit
+-dontwarn retrofit.**
+-keep class retrofit.** { *; }
+-keepattributes Signature
+-keepattributes Exceptions
+
+#jsoup
+-keep public class org.jsoup.** {
+public *;
+}
+
+#
+-printmapping proguard_mapping.txt
+-keep class im.fir.sdk.version.AppVersion { *; }
+
+-keep enum * { *; }
+
+-keep class proguard.annotation.**

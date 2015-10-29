@@ -1,8 +1,11 @@
 package com.yuantiku.siphon.data.apkconfigs;
 
+import proguard.annotation.KeepClassMemberNames;
+
 /**
  * Created by wanghb on 15/8/23.
  */
+@KeepClassMemberNames
 public class ApkConfig {
     int id;
     String name;
