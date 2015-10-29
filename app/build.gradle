@@ -29,6 +29,21 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    signingConfigs {
+        debug {
+            storeFile file(project.property("signConf.keystoreFile"))
+            storePassword project.property("signConf.storePassword")
+            keyAlias project.property("signConf.keyAlias")
+            keyPassword project.property("signConf.keyPassword")
+        }
+        release {
+            storeFile file(project.property("signConf.keystoreFile"))
+            storePassword project.property("signConf.storePassword")
+            keyAlias project.property("signConf.keyAlias")
+            keyPassword project.property("signConf.keyPassword")
+        }
+    }
+
     lintOptions {
         disable 'InvalidPackage'
     }
