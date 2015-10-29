@@ -10,9 +10,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import bwzz.activityCallback.LaunchArgument;
+
 import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
+import com.yuantiku.siphon.fragment.AboutFragment;
 import com.yuantiku.siphon.helper.ApkHelper;
 import com.yuantiku.siphon.helper.JsonHelper;
 import com.yuantiku.siphon.helper.LaunchHelper;
@@ -21,8 +24,6 @@ import com.yuantiku.siphon.mvp.presenter.HomePresenter;
 import com.yuantiku.siphon.mvp.presenter.IPresenterManager;
 import com.yuantiku.siphon.mvp.presenter.PresenterFactory;
 import com.yuantiku.siphon.mvp.viewmodel.HomeViewModel;
-
-import bwzz.activityCallback.LaunchArgument;
 
 /**
  * Created by wanghb on 15/9/3.
@@ -63,6 +64,9 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
             case R.id.action_test_tutor:
                 testTutor();
                 break;
+            case R.id.action_settings:
+                about();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -70,7 +74,7 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         HomeViewModel homeViewModel = new HomeViewModel(view, this);
         homePresenter.attachView(homeViewModel);
@@ -118,11 +122,11 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
                         ApkConfig apkConfig = JsonHelper.json(acs, ApkConfig.class);
                         homePresenter.updateApkConfig(apkConfig);
                         // TODO : view
-                        getActivity().setTitle(String.format("%s %s", apkConfig.getName(),
-                                apkConfig.getType()));
-                    }
-                    return true;
-                });
+                getActivity().setTitle(String.format("%s %s", apkConfig.getName(),
+                        apkConfig.getType()));
+            }
+            return true;
+        });
         launch(argument);
     }
 
@@ -137,4 +141,11 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
                 getActivity());
         launch(argument);
     }
+
+    private void about() {
+        LaunchArgument argument = LaunchHelper.createArgument(AboutFragment.class,
+                getActivity());
+        launch(argument);
+    }
+
 }
