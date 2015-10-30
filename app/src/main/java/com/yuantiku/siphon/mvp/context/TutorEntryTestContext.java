@@ -1,5 +1,6 @@
 package com.yuantiku.siphon.mvp.context;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.yuantiku.siphon.R;
 
@@ -58,9 +60,13 @@ public class TutorEntryTestContext extends BaseContext {
     }
 
     private void launch(String type, String id) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(String.format("tutor1f6f42334e1709a4://openRecommended%s?id=%s",
-                type, id)));
-        startActivity(intent);
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(String.format("tutor1f6f42334e1709a4://openRecommended%s?id=%s",
+                    type, id)));
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(getActivity(), "手机上没有安装猿辅导或者猿辅导没有提供支持", Toast.LENGTH_LONG).show();
+        }
     }
 }
