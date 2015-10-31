@@ -13,35 +13,32 @@ android {
         versionCode 6
         versionName "1.0"
     }
+
+    signingConfigs {
+        signingConf {
+            storeFile file(project.property("signConf.keystoreFile"))
+            storePassword project.property("signConf.storePassword")
+            keyAlias project.property("signConf.keyAlias")
+            keyPassword project.property("signConf.keyPassword")
+        }
+    }
+
     buildTypes {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'libs/annotations.pro'
+            signingConfig signingConfigs.signingConf
         }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'libs/annotations.pro'
+            signingConfig signingConfigs.signingConf
         }
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    signingConfigs {
-        debug {
-            storeFile file(project.property("signConf.keystoreFile"))
-            storePassword project.property("signConf.storePassword")
-            keyAlias project.property("signConf.keyAlias")
-            keyPassword project.property("signConf.keyPassword")
-        }
-        release {
-            storeFile file(project.property("signConf.keystoreFile"))
-            storePassword project.property("signConf.storePassword")
-            keyAlias project.property("signConf.keyAlias")
-            keyPassword project.property("signConf.keyPassword")
-        }
     }
 
     lintOptions {
