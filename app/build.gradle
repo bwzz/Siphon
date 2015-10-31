@@ -5,13 +5,15 @@ apply plugin: 'com.neenbedankt.android-apt'
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
+    def versionMajor = 1
+    def versionMinor = 0
 
     defaultConfig {
         applicationId "com.yuantiku.siphon"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 6
-        versionName "1.0"
+        versionCode versionMajor * 10 + versionMinor
+        versionName "${versionMajor}.${versionMinor}"
     }
 
     signingConfigs {
@@ -20,6 +22,28 @@ android {
             storePassword project.property("signConf.storePassword")
             keyAlias project.property("signConf.keyAlias")
             keyPassword project.property("signConf.keyPassword")
+        }
+    }
+
+    def getCommit = { ->
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-parse', "--short", 'HEAD'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim().substring(0, 4)
+    }
+
+    def renameOutputApkFile = { variant, defaultConfig ->
+        variant.outputs.each { output ->
+            def file = output.outputFile
+            def fileName = file.name
+            if (variant.buildType.name.equals("release")) {
+                fileName = "siphon-${defaultConfig.versionName}.apk"
+            } else {
+                fileName = "siphon-debug-${getCommit()}.apk"
+            }
+            output.outputFile = new File(file.parent, fileName)
         }
     }
 
@@ -33,6 +57,9 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'libs/annotations.pro'
             signingConfig signingConfigs.signingConf
+            applicationVariants.all { variant ->
+                renameOutputApkFile(variant, defaultConfig)
+            }
         }
     }
 
@@ -47,6 +74,16 @@ android {
 
     packagingOptions {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
+
+    def publish = project.tasks.create("pubAll")
+    android.applicationVariants.all { variant ->
+        def task = project.tasks.create("pub${variant.name[0].toUpperCase()}${variant.name[1..-1]}", Copy)
+        task.from(variant.outputs[0].outputFile)
+        task.into('../')
+
+        task.dependsOn variant.assemble
+        publish.dependsOn task
     }
 }
 
