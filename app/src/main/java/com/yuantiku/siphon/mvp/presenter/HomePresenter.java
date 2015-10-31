@@ -97,12 +97,11 @@ public class HomePresenter extends BasePresenter {
     public void updateApkConfig(ApkConfig apkConfig) {
         this.apkConfig = apkConfig;
         apkConfigModel.setDefault(apkConfig);
+        swapFileEntriesPresenter(view, fileEntryModel);
 
         fileEntryModel.getLatest(apkConfig, fileEntry -> {
             this.fileEntry = fileEntry;
             view.renderApkConfig(apkConfig, fileEntry, getApkFile(fileEntry));
-
-            swapFileEntriesPresenter(view, fileEntryModel);
         });
     }
 
@@ -113,7 +112,6 @@ public class HomePresenter extends BasePresenter {
 
     public void sync() {
         installAuto = false;
-        swapFileEntriesPresenter(view, fileEntryModel);
         fileEntriesListPresenter.sync(new SyncHelper.IHandler() {
             @Override
             public void onSyncStart(ApkConfig apkConfig) {

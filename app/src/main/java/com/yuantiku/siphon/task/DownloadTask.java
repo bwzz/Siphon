@@ -5,17 +5,17 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import bwzz.taskmanager.AbstractTask;
-import bwzz.taskmanager.ITaskReporter;
-import bwzz.taskmanager.TaskException;
-import bwzz.taskmanager.TaskReportHandler;
-
 import com.koushikdutta.async.future.Future;
 import com.koushikdutta.ion.Ion;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.imodel.IFileModelFactory;
 
 import java.io.File;
+
+import bwzz.taskmanager.AbstractTask;
+import bwzz.taskmanager.ITaskReporter;
+import bwzz.taskmanager.TaskException;
+import bwzz.taskmanager.TaskReportHandler;
 
 /**
  * Created by wanghb on 15/8/21.
@@ -63,10 +63,11 @@ public class DownloadTask extends AbstractTask<IFileModel> {
                         (e, result) -> {
                             if (e != null) {
                                 setTaskException(TaskException.wrap(e));
+                            } else {
+                                IFileModel fileModel = fileModelFactory.createFileModel(result
+                                        .getAbsolutePath());
+                                setResult(fileModel);
                             }
-                            IFileModel fileModel = fileModelFactory.createFileModel(result
-                                    .getAbsolutePath());
-                            setResult(fileModel);
                             taskReporter.onTaskFinish(this);
                         });
         taskReporter.onTaskStart(this);
