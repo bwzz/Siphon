@@ -20,8 +20,6 @@ allprojects {
     repositories {
 //        jcenter()
         jcenter({ url "http://jcenter.bintray.com" })
-        maven {
-            url "http://dl.bintray.com/fir/maven"
-        }
+        maven { url "http://maven.bughd.com/public" }
     }
 }

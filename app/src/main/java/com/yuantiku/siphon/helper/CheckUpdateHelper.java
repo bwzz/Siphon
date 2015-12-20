@@ -41,17 +41,11 @@ public class CheckUpdateHelper {
             }
 
             @Override
-            public void onFail(String s, int i) {
-                if (checkUpdateCallback != null) {
-                    checkUpdateCallback.onError(new Exception(s));
+            public void onFail(com.squareup.okhttp.Request request, Exception e) {
+                if (checkUpdateCallback == null) {
+                    return;
                 }
-            }
-
-            @Override
-            public void onError(Exception e) {
-                if (checkUpdateCallback != null) {
-                    checkUpdateCallback.onError(e);
-                }
+                checkUpdateCallback.onError(e);
             }
 
             @Override
