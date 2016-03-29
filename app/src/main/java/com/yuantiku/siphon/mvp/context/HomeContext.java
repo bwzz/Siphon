@@ -1,7 +1,10 @@
 package com.yuantiku.siphon.mvp.context;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -9,6 +12,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import bwzz.activityCallback.LaunchArgument;
 
 import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.constant.Key;
@@ -22,8 +27,6 @@ import com.yuantiku.siphon.mvp.presenter.HomePresenter;
 import com.yuantiku.siphon.mvp.presenter.IPresenterManager;
 import com.yuantiku.siphon.mvp.presenter.PresenterFactory;
 import com.yuantiku.siphon.mvp.viewmodel.HomeViewModel;
-
-import bwzz.activityCallback.LaunchArgument;
 
 /**
  * Created by wanghb on 15/9/3.
@@ -67,9 +70,18 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
             case R.id.action_about:
                 about();
                 break;
+            case R.id.action_open_tutor_settings:
+                openTutorSetting();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openTutorSetting() {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.setData(Uri.parse("package:com.yuantiku.tutor"));
+        startActivity(intent);
     }
 
     @Override
