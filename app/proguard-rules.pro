@@ -58,3 +58,4 @@ public *;
 -keep enum * { *; }
 
 -keep class proguard.annotation.**
+-dontwarn okio.**
