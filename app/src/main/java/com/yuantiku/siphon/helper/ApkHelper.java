@@ -20,4 +20,12 @@ public class ApkHelper {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
+
+    public static void removeApk(IFileModel fileModel) {
+        new File(fileModel.getPath()).delete();
+    }
+
+    public static void clearCache() {
+        ZhenguanyuPathHelper.deleteDir();
+    }
 }

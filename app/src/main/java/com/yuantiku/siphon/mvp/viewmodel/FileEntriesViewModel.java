@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,7 +19,7 @@ import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.factory.EmptyObjectFactory;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.model.FileModelFactory;
-import com.yuantiku.siphon.mvp.presenter.FileEntriesListPresenter;
+import com.yuantiku.siphon.mvp.presenter.FileEntriesListPresenter.IView;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -29,12 +31,14 @@ import bwzz.taskmanager.TaskException;
 /**
  * Created by wanghb on 15/9/5.
  */
-public class FileEntriesViewModel extends BaseViewModel implements FileEntriesListPresenter.IView,
-        AdapterView.OnItemClickListener {
+public class FileEntriesViewModel extends BaseViewModel implements IView,
+        OnItemClickListener, OnItemLongClickListener {
 
     public interface IHandler {
 
         void clickFileEntry(FileEntry fileEntry);
+
+        void longClickFileEntry(FileEntry fileEntry);
 
         void refresh();
     }
@@ -51,11 +55,12 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         swipeRefreshLayout = new SwipeRefreshLayout(container.getContext());
         ListView listView = new ListView(container.getContext());
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
+        listView.setOnItemLongClickListener(this);
         swipeRefreshLayout.addView(listView);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             handler.refresh();
@@ -102,6 +107,13 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         FileEntry fileEntry = (FileEntry) adapter.getItem(position);
         handler.clickFileEntry(fileEntry);
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        FileEntry fileEntry = (FileEntry) adapter.getItem(position);
+        handler.longClickFileEntry(fileEntry);
+        return true;
     }
 
     private static class FileEntriesAdapter extends BaseAdapter {

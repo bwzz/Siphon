@@ -25,6 +25,7 @@ import javax.inject.Inject;
  * Created by wanghb on 15/9/5.
  */
 public class FileEntriesContext extends BaseContext implements FileEntriesViewModel.IHandler {
+
     private FileEntriesListPresenter fileEntriesListPresenter;
     @Inject
     FileModelFactory fileModelFactory;
@@ -48,7 +49,7 @@ public class FileEntriesContext extends BaseContext implements FileEntriesViewMo
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         FileEntriesViewModel fileEntriesViewModel = new FileEntriesViewModel(fileModelFactory, this);
         View view = fileEntriesViewModel.onCreateView(inflater, container, savedInstanceState);
         fileEntriesListPresenter.attachView(fileEntriesViewModel);
@@ -64,6 +65,11 @@ public class FileEntriesContext extends BaseContext implements FileEntriesViewMo
         } else {
             fileEntriesListPresenter.download(null, fileEntry);
         }
+    }
+
+    @Override
+    public void longClickFileEntry(FileEntry fileEntry) {
+        // TODO: 16/8/4 [by wanghb.]
     }
 
     @Override

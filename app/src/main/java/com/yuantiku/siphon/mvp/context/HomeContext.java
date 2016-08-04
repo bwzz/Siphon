@@ -73,6 +73,9 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
             case R.id.action_open_tutor_settings:
                 openTutorSetting();
                 break;
+            case R.id.action_clear_cache:
+                ApkHelper.clearCache();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
