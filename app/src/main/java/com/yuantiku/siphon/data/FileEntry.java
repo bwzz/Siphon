@@ -6,6 +6,7 @@ import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.data.apkconfigs.ApkType;
 import com.yuantiku.siphon.factory.SingletonFactory;
 
+import proguard.annotation.KeepClassMemberNames;
 import se.emilsjolander.sprinkles.Model;
 import se.emilsjolander.sprinkles.annotations.Column;
 import se.emilsjolander.sprinkles.annotations.PrimaryKey;
@@ -15,6 +16,7 @@ import se.emilsjolander.sprinkles.annotations.Table;
  * @author wanghb
  * @date 15/8/15.
  */
+@KeepClassMemberNames
 @Table(FileEntry.FileEntries)
 public class FileEntry extends Model {
 

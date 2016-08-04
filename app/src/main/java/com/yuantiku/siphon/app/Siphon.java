@@ -2,6 +2,7 @@ package com.yuantiku.siphon.app;
 
 import android.app.Application;
 
+import com.yuantiku.siphon.BuildConfig;
 import com.yuantiku.siphon.dagger.component.ApplicationComponent;
 import com.yuantiku.siphon.dagger.component.DaggerApplicationComponent;
 import com.yuantiku.siphon.dagger.module.ApplicationModule;
@@ -22,9 +23,9 @@ public class Siphon extends Application {
     @Override
     public void onCreate() {
         application = this;
-        FIR.init(this);
         super.onCreate();
-        FIR.setDebug(false);
+        FIR.init(this);
+        FIR.setDebug(BuildConfig.DEBUG);
         this.initializeInjector();
         PresenterFactory.initApplicationComponent(applicationComponent);
         SingletonFactory.init(applicationComponent);

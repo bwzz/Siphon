@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'im.fir.plugin.gradle'
 
 android {
     compileSdkVersion 22
@@ -76,15 +77,6 @@ android {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
     }
 
-    def publish = project.tasks.create("pubAll")
-    android.applicationVariants.all { variant ->
-        def task = project.tasks.create("pub${variant.name[0].toUpperCase()}${variant.name[1..-1]}", Copy)
-        task.from(variant.outputs[0].outputFile)
-        task.into('../')
-
-        task.dependsOn variant.assemble
-        publish.dependsOn task
-    }
 }
 
 dependencies {
@@ -112,4 +104,14 @@ dependencies {
     testCompile 'org.mockito:mockito-core:1.10.19'
     // Set this dependency if you want to use Hamcrest matching
     androidTestCompile 'org.hamcrest:hamcrest-library:1.1'
+}
+
+fir {
+    apiToken '24f1dc375cf795bf73d26d57fc73d17d'
+    changeLog '加速了，像飞一样快~\n在右上角更多里有删除缓存'
+}
+
+bughd{
+    projectId '55d738bba1de52647a00000c'
+    apiToken '548e1e2dc68040dba6d230542ef27a66'
 }

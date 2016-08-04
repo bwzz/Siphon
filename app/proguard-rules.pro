@@ -52,7 +52,6 @@ public *;
 }
 
 #
--printmapping proguard_mapping.txt
 -keep class im.fir.sdk.version.AppVersion { *; }
 
 -keep enum * { *; }
