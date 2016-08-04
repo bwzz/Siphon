@@ -1,6 +1,5 @@
 package com.yuantiku.siphon.webservice;
 
-import com.yuantiku.siphon.data.FileConverter;
 import com.yuantiku.siphon.data.HtmlToFileEntriesConverter;
 import com.yuantiku.siphon.helper.ZhenguanyuPathHelper;
 
@@ -23,12 +22,12 @@ public class ServiceFactory {
         return restAdapter.create(ZhenguanyuService.class);
     }
 
-    public static FileDownloadService createDownloadService(String targetFilePath) {
+    public static SiphonService createSiphonService() {
         RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(EndPoint)
+                .setEndpoint(EndPoint + ":3000")
                 .setLogLevel(LogLevel.BASIC)
-                .setConverter(new FileConverter(targetFilePath))
                 .build();
-        return restAdapter.create(FileDownloadService.class);
+        return restAdapter.create(SiphonService.class);
     }
+
 }

@@ -9,7 +9,10 @@ import com.yuantiku.siphon.webservice.ServiceFactory;
 
 import java.util.List;
 
-import bwzz.taskmanager.*;
+import bwzz.taskmanager.AbstractTask;
+import bwzz.taskmanager.ITaskReporter;
+import bwzz.taskmanager.TaskException;
+import bwzz.taskmanager.TaskReportHandler;
 import rx.android.schedulers.AndroidSchedulers;
 
 /**
@@ -34,6 +37,20 @@ public class SyncTask extends AbstractTask<List<FileEntry>> {
 
     @Override
     public void run(@Nullable ITaskReporter taskReporter) {
+        ServiceFactory.createSiphonService()
+                .listFiles(String.valueOf(apkConfig.getId()), apkConfig.getType().name())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((list) -> {
+                    setApkConfigForResult(list);
+                    setResult(list);
+                    reportTaskFinish(taskReporter);
+                }, (error) -> {
+                    runDeprecated(taskReporter);
+                });
+        taskReporter.onTaskStart(this);
+    }
+
+    private void runDeprecated(@Nullable ITaskReporter taskReporter) {
         ServiceFactory.createZhenguanyuService()
                 .listFiles(apkConfig.getListPath())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -45,7 +62,6 @@ public class SyncTask extends AbstractTask<List<FileEntry>> {
                     setTaskException(TaskException.wrap(error));
                     reportTaskFinish(taskReporter);
                 });
-        taskReporter.onTaskStart(this);
     }
 
     private void reportTaskFinish(@Nullable ITaskReporter taskReporter) {
