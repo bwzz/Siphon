@@ -173,7 +173,7 @@ public class FileEntriesViewModel extends BaseViewModel implements FileEntriesLi
                 textView.setMinLines(3);
             }
             FileEntry fileEntry = (FileEntry) getItem(position);
-            textView.setText(fileEntry.name);
+            textView.setText(String.format("%s\n%s", fileEntry.name, fileEntry.date));
             int pad = 30;
             textView.setPadding(pad, pad, pad, pad);
 

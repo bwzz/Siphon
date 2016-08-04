@@ -85,7 +85,7 @@ public class FileEntriesListPresenter extends BasePresenter {
 
     public FileEntriesListPresenter attachView(IView view) {
         this.view = EmptyObjectFactory.ensureObject(view, IView.class);
-        fileEntryModel.list(apkConfig, fileEntries -> view.renderSyncSuccess(apkConfig, fileEntries));
+        sync(null);
         return this;
     }
 
