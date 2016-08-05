@@ -53,11 +53,13 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'libs/annotations.pro'
             signingConfig signingConfigs.signingConf
+            resValue "string", "fir_api_token", project.property("fir.apiToken")
         }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'libs/annotations.pro'
             signingConfig signingConfigs.signingConf
+            resValue "string", "fir_api_token", project.property("fir.apiToken")
             applicationVariants.all { variant ->
                 renameOutputApkFile(variant, defaultConfig)
             }
@@ -107,11 +109,11 @@ dependencies {
 }
 
 fir {
-    apiToken '24f1dc375cf795bf73d26d57fc73d17d'
+    apiToken project.property("fir.apiToken")
     changeLog '加速了，像飞一样快~\n在右上角更多里有删除缓存'
 }
 
 bughd{
     projectId '55d738bba1de52647a00000c'
-    apiToken '548e1e2dc68040dba6d230542ef27a66'
+    apiToken project.property("bughd.apiToken")
 }

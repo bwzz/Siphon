@@ -3,6 +3,7 @@ package com.yuantiku.siphon.helper;
 import android.content.Context;
 import android.content.Intent;
 
+import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.service.CheckUpdateService;
 
 import im.fir.sdk.FIR;
@@ -26,33 +27,34 @@ public class CheckUpdateHelper {
     }
 
     public static void checkUpdate(Context context, CheckUpdateCallback checkUpdateCallback) {
-        FIR.checkForUpdateInFIR("24f1dc375cf795bf73d26d57fc73d17d", new VersionCheckCallback() {
-            @Override
-            public void onSuccess(AppVersion appVersion, boolean b) {
-                if (checkUpdateCallback == null) {
-                    return;
-                }
-                if (AppHelper.getVersionCode(context) < appVersion
-                        .getVersionCode()) {
-                    checkUpdateCallback.onNewVersion(appVersion);
-                } else {
-                    checkUpdateCallback.onNoNewVersion(appVersion);
-                }
-            }
+        FIR.checkForUpdateInFIR(context.getString(R.string.fir_api_token),
+                new VersionCheckCallback() {
+                    @Override
+                    public void onSuccess(AppVersion appVersion, boolean b) {
+                        if (checkUpdateCallback == null) {
+                            return;
+                        }
+                        if (AppHelper.getVersionCode(context) < appVersion
+                                .getVersionCode()) {
+                            checkUpdateCallback.onNewVersion(appVersion);
+                        } else {
+                            checkUpdateCallback.onNoNewVersion(appVersion);
+                        }
+                    }
 
-            @Override
-            public void onFail(com.squareup.okhttp.Request request, Exception e) {
-                if (checkUpdateCallback == null) {
-                    return;
-                }
-                checkUpdateCallback.onError(e);
-            }
+                    @Override
+                    public void onFail(com.squareup.okhttp.Request request, Exception e) {
+                        if (checkUpdateCallback == null) {
+                            return;
+                        }
+                        checkUpdateCallback.onError(e);
+                    }
 
-            @Override
-            public void onStart() {}
+                    @Override
+                    public void onStart() {}
 
-            @Override
-            public void onFinish() {}
-        });
+                    @Override
+                    public void onFinish() {}
+                });
     }
 }
