@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 
 /**
  * Created by wanghb on 15/8/21.
@@ -14,11 +15,17 @@ public class AppHelper {
         return info.versionCode;
     }
 
+    public static String getVersionName(Context context) {
+        PackageInfo info = getPackageInfo(context);
+        return info.versionName;
+    }
+
     @NonNull
     private static PackageInfo getPackageInfo(Context context) {
         try {
             PackageManager packageManager = context.getPackageManager();
-            PackageInfo info = packageManager.getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
+            PackageInfo info = packageManager.getPackageInfo(context.getPackageName(),
+                    PackageManager.GET_ACTIVITIES);
             return info;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();

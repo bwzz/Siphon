@@ -70,8 +70,8 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
             case R.id.action_about:
                 about();
                 break;
-            case R.id.action_open_tutor_settings:
-                openTutorSetting();
+            case R.id.action_open_app_settings:
+                openAppSetting();
                 break;
             case R.id.action_clear_cache:
                 ApkHelper.clearCache();
@@ -81,9 +81,10 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
         return super.onOptionsItemSelected(item);
     }
 
-    private void openTutorSetting() {
+    private void openAppSetting() {
+        ApkConfig apkConfig = homePresenter.getApkConfig();
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        intent.setData(Uri.parse("package:com.yuantiku.tutor"));
+        intent.setData(Uri.parse("package:" + apkConfig.getPackageName()));
         startActivity(intent);
     }
 
@@ -137,11 +138,11 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
                         ApkConfig apkConfig = JsonHelper.json(acs, ApkConfig.class);
                         homePresenter.updateApkConfig(apkConfig);
                         // TODO : view
-                getActivity().setTitle(String.format("%s %s", apkConfig.getName(),
-                        apkConfig.getType()));
-            }
-            return true;
-        });
+                        getActivity().setTitle(String.format("%s %s", apkConfig.getName(),
+                                apkConfig.getType()));
+                    }
+                    return true;
+                });
         launch(argument);
     }
 

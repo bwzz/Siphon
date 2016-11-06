@@ -10,10 +10,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yuantiku.siphon.R;
+import com.yuantiku.siphon.helper.ApkHelper;
+import com.yuantiku.siphon.helper.AppHelper;
 
+import javax.inject.Inject;
+
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import bwzz.fragment.BaseFragment;
@@ -23,6 +29,10 @@ import bwzz.fragment.BaseFragment;
  * @date 15/10/29.
  */
 public class AboutFragment extends BaseFragment {
+
+    @Bind(R.id.version)
+    TextView version;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,20 +41,12 @@ public class AboutFragment extends BaseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_about, container, false);
         ButterKnife.bind(this, view);
+        version.setText(AppHelper.getVersionName(getActivity()));
         return view;
-    }
-
-    @OnClick(R.id.wechat)
-    public void launchWeChat() {
-        Toast.makeText(getActivity(), "如果你知道怎么进入微信聊天，请告诉我", Toast.LENGTH_LONG).show();
-    }
-
-    @OnClick(R.id.qq)
-    public void launchQQ() {
-        launch("http://qm.qq.com/cgi-bin/qm/qr?k=J4LuIf8B0hP4W5hOXcPkAeH2rfbKNP6W");
     }
 
     private void launch(String url) {

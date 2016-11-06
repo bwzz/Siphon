@@ -105,6 +105,10 @@ public class HomePresenter extends BasePresenter {
         });
     }
 
+    public ApkConfig getApkConfig() {
+        return apkConfig;
+    }
+
     public void oneStep() {
         sync();
         installAuto = true;

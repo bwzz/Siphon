@@ -2,9 +2,9 @@
     <string name="app_name">Siphon</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_check_update">检查更新</string>
-    <string name="action_select_apk">选择应用</string>
+    <string name="action_select_apk">选产品</string>
     <string name="action_about">关于</string>
     <string name="action_test_tutor">测试Tutor</string>
-    <string name="action_open_tutor_test">打开Tutor程序设置</string>
+    <string name="action_open_tutor_test">打开设置</string>
     <string name="action_clear_cache">清除缓存</string>
 </resources>

@@ -12,6 +12,7 @@ public class ApkConfig {
     ApkType type;
     String icon;
     int color;
+    String packageName;
 
     public int getId() {
         return id;
@@ -35,6 +36,10 @@ public class ApkConfig {
 
     public int getColor() {
         return color;
+    }
+
+    public String getPackageName() {
+        return packageName;
     }
 
     @Override
