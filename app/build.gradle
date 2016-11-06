@@ -7,7 +7,7 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.3"
     def versionMajor = 1
-    def versionMinor = 2
+    def versionMinor = 3
 
     defaultConfig {
         applicationId "com.yuantiku.siphon"
@@ -111,7 +111,7 @@ dependencies {
 
 fir {
     apiToken project.property("fir.apiToken")
-    changeLog '加速了，像飞一样快~\n在右上角更多里有删除缓存'
+    changeLog '你要的清爽列表\n功能菜单不能再好用了'
 }
 
 bughd{
