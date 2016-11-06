@@ -2,6 +2,8 @@ package com.yuantiku.siphon.mvp.viewmodel;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -11,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -21,18 +24,26 @@ import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.model.FileModelFactory;
 import com.yuantiku.siphon.mvp.presenter.FileEntriesListPresenter.IView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import bwzz.taskmanager.TaskException;
+
+import static android.R.attr.entries;
+import static android.R.attr.name;
 
 /**
  * Created by wanghb on 15/9/5.
  */
 public class FileEntriesViewModel extends BaseViewModel implements IView,
-        OnItemClickListener, OnItemLongClickListener {
+        OnItemClickListener, OnItemLongClickListener, TabLayout.OnTabSelectedListener {
 
     public interface IHandler {
 
@@ -43,11 +54,17 @@ public class FileEntriesViewModel extends BaseViewModel implements IView,
         void refresh();
     }
 
+    enum TabTag {
+        all, guess,
+    };
+
     private IHandler handler = EmptyObjectFactory.createEmptyObject(IHandler.class);
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private final FileEntriesAdapter adapter;
+
+    private ListView listView;
 
     public FileEntriesViewModel(FileModelFactory fileModelFactory, IHandler handler) {
         adapter = new FileEntriesAdapter(fileModelFactory);
@@ -56,8 +73,12 @@ public class FileEntriesViewModel extends BaseViewModel implements IView,
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
+        TabLayout tabLayout = new TabLayout(container.getContext());
+        tabLayout.addTab(tabLayout.newTab().setText("所有").setTag(TabTag.all));
+        tabLayout.addTab(tabLayout.newTab().setText("猜你想要").setTag(TabTag.guess));
+        tabLayout.setOnTabSelectedListener(this);
         swipeRefreshLayout = new SwipeRefreshLayout(container.getContext());
-        ListView listView = new ListView(container.getContext());
+        listView = new ListView(container.getContext());
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(this);
@@ -66,7 +87,11 @@ public class FileEntriesViewModel extends BaseViewModel implements IView,
             handler.refresh();
         });
         swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(true));
-        return swipeRefreshLayout;
+        LinearLayout linearLayout = new LinearLayout(container.getContext());
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.addView(tabLayout);
+        linearLayout.addView(swipeRefreshLayout);
+        return linearLayout;
     }
 
     @Override
@@ -116,21 +141,77 @@ public class FileEntriesViewModel extends BaseViewModel implements IView,
         return true;
     }
 
-    private static class FileEntriesAdapter extends BaseAdapter {
+    private Map<TabTag, Parcelable> listViewStateMap = new HashMap<>();
 
-        private List<FileEntry> fileEntries = new LinkedList<>();
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        if (tab.getTag() == TabTag.all) {
+            listViewStateMap.put(TabTag.guess, listView.onSaveInstanceState());
+        } else {
+            listViewStateMap.put(TabTag.all, listView.onSaveInstanceState());
+        }
+        adapter.setTabTag((TabTag) tab.getTag());
+        if (listViewStateMap.get(tab.getTag()) != null) {
+            listView.onRestoreInstanceState(listViewStateMap.get(tab.getTag()));
+        }
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
+    }
+
+    private static class FileEntriesAdapter extends BaseAdapter {
 
         private Map<String, View> entry2View = new HashMap<>();
 
+        private Map<TabTag, List<FileEntry>> entriesMap = new HashMap<>();
+
         private final FileModelFactory fileModelFactory;
+
+        private TabTag tabTag = TabTag.all;
 
         public FileEntriesAdapter(FileModelFactory fileModelFactory) {
             this.fileModelFactory = fileModelFactory;
         }
 
-        public void update(List<FileEntry> fileEntries) {
-            this.fileEntries = fileEntries;
+        public void setTabTag(TabTag tabTag) {
+            this.tabTag = tabTag;
+            entry2View.clear();
             notifyDataSetChanged();
+        }
+
+        public void update(List<FileEntry> fileEntries) {
+            entriesMap.put(TabTag.all, fileEntries);
+            List<FileEntry> entries = new ArrayList<>();
+            Set<String> foundVersions = new HashSet<>();
+            for (FileEntry entry : fileEntries) {
+                String version = parseVersion(entry);
+                if (TextUtils.isEmpty(version) || foundVersions.contains(version)) {
+                    continue;
+                }
+                foundVersions.add(version);
+                entries.add(entry);
+            }
+            entriesMap.put(TabTag.guess, entries);
+            entry2View.clear();
+            notifyDataSetChanged();
+        }
+
+        private String parseVersion(FileEntry entry) {
+            if (entry == null) {
+                return null;
+            }
+            String[] sps = entry.name.split("-");
+            if (sps.length < 2) {
+                return "";
+            }
+            return sps[1];
         }
 
         public void updateItemProgress(FileEntry fileEntry, float progress) {
@@ -164,12 +245,15 @@ public class FileEntriesViewModel extends BaseViewModel implements IView,
 
         @Override
         public int getCount() {
-            return fileEntries.size();
+            if (!entriesMap.containsKey(tabTag)) {
+                return 0;
+            }
+            return entriesMap.get(tabTag).size();
         }
 
         @Override
         public Object getItem(int position) {
-            return fileEntries.get(position);
+            return entriesMap.get(tabTag).get(position);
         }
 
         @Override
@@ -185,7 +269,17 @@ public class FileEntriesViewModel extends BaseViewModel implements IView,
                 textView.setMinLines(3);
             }
             FileEntry fileEntry = (FileEntry) getItem(position);
-            textView.setText(String.format("%s\n%s", fileEntry.name, fileEntry.date));
+            String date = fileEntry.date;
+            try {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+                        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("yyyy年MM月dd日HH时mm分ss秒");
+                date = simpleDateFormat1.format(simpleDateFormat.parse(fileEntry.date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            textView.setTextSize(18);
+            textView.setText(String.format("%s\n%s", fileEntry.name, date));
             int pad = 30;
             textView.setPadding(pad, pad, pad, pad);
 
