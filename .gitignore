@@ -9,3 +9,4 @@ app/proguard_mapping.txt
 /build
 /captures
 *.iml
+node_modules

@@ -1,0 +1,34 @@
+
+Ñ
+
+frog.protocom.fenbi.frog.v2.protobuf"&
+KeyValue
+key (	
+value (	"•
+Header
+userId (
+device (
+deviceId (	
+	osVersion (	
+
+appVersion (	
+model (	
+manufacturer (	
+operator (	
+phoneNumber	 (	
+
+screenSize
+ (
+screenWidth (
+screenHeight (7
+	extension (2$.com.fenbi.frog.v2.protobuf.KeyValue"è
+Entry
+	productId (
+	timestamp (
+seqId (
+url (	
+net (7
+	keyValues (2$.com.fenbi.frog.v2.protobuf.KeyValue"p
+PostData0
+head (2".com.fenbi.frog.v2.protobuf.Header2
+entries (2!.com.fenbi.frog.v2.protobuf.EntryBBFrog
