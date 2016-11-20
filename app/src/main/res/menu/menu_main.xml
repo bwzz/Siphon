@@ -19,6 +19,11 @@
         android:title="@string/action_open_tutor_test"
         app:showAsAction="never"/>
     <item
+        android:id="@+id/action_login"
+        android:orderInCategory="100"
+        android:title="@string/action_login"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/action_clear_cache"
         android:orderInCategory="100"
         android:title="@string/action_clear_cache"

@@ -7,4 +7,5 @@
     <string name="action_test_tutor">测试Tutor</string>
     <string name="action_open_tutor_test">打开设置</string>
     <string name="action_clear_cache">清除缓存</string>
+    <string name="action_login">登录猿辅导</string>
 </resources>

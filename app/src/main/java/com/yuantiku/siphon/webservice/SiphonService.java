@@ -1,5 +1,6 @@
 package com.yuantiku.siphon.webservice;
 
+import com.yuantiku.siphon.data.FenbiAccount;
 import com.yuantiku.siphon.data.FileEntry;
 
 import java.util.List;
@@ -15,4 +16,7 @@ import rx.Observable;
 public interface SiphonService {
     @GET("/android/{id}/{type}")
     Observable<List<FileEntry>> listFiles(@Path("id") String id, @Path("type") String type);
+
+    @GET("/accounts")
+    Observable<List<FenbiAccount>> listAccounts();
 }

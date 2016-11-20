@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,6 +20,7 @@ import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.constant.Key;
 import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 import com.yuantiku.siphon.fragment.AboutFragment;
+import com.yuantiku.siphon.fragment.TutorAccountListFragment;
 import com.yuantiku.siphon.helper.ApkHelper;
 import com.yuantiku.siphon.helper.JsonHelper;
 import com.yuantiku.siphon.helper.LaunchHelper;
@@ -59,22 +61,25 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_check_update:
-                checkUpdate();
+                launchFragment(CheckUpdateContext.class);
                 break;
             case R.id.action_select_apk:
                 selectApplication();
                 break;
             case R.id.action_test_tutor:
-                testTutor();
+                launchFragment(TutorEntryTestContext.class);
                 break;
             case R.id.action_about:
-                about();
+                launchFragment(AboutFragment.class);
                 break;
             case R.id.action_open_app_settings:
                 openAppSetting();
                 break;
             case R.id.action_clear_cache:
                 ApkHelper.clearCache();
+                break;
+            case R.id.action_login:
+                launchFragment(TutorAccountListFragment.class);
                 break;
         }
 
@@ -146,22 +151,9 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
         launch(argument);
     }
 
-    private void checkUpdate() {
-        LaunchArgument argument = LaunchHelper.createArgument(CheckUpdateContext.class,
+    private void launchFragment(Class<? extends Fragment> clazz) {
+        LaunchArgument argument = LaunchHelper.createArgument(clazz,
                 getActivity());
         launch(argument);
     }
-
-    private void testTutor() {
-        LaunchArgument argument = LaunchHelper.createArgument(TutorEntryTestContext.class,
-                getActivity());
-        launch(argument);
-    }
-
-    private void about() {
-        LaunchArgument argument = LaunchHelper.createArgument(AboutFragment.class,
-                getActivity());
-        launch(argument);
-    }
-
 }
