@@ -4,6 +4,7 @@ import bwzz.taskmanager.ITask;
 import bwzz.taskmanager.ITaskReporter;
 
 import com.yuantiku.siphon.app.ApplicationFactory;
+import com.yuantiku.siphon.data.AppVersion;
 import com.yuantiku.siphon.factory.EmptyObjectFactory;
 import com.yuantiku.siphon.helper.CheckUpdateHelper;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
@@ -11,9 +12,8 @@ import com.yuantiku.siphon.mvp.imodel.IFileModelFactory;
 import com.yuantiku.siphon.task.DownloadTask;
 import com.yuantiku.siphon.task.ITaskFactory;
 
-import im.fir.sdk.version.AppVersion;
-
 import javax.inject.Inject;
+
 
 /**
  * Created by wanghb on 15/9/4.
@@ -26,7 +26,7 @@ public class CheckUpdatePresenter extends BasePresenter {
 
         void renderCheckFinishWithNoNewVersion(AppVersion oldVersion);
 
-        void renderCheckFailed(AppVersion oldVersion, Exception e);
+        void renderCheckFailed(AppVersion oldVersion, Throwable e);
 
         void renderDownloadTaskStart(AppVersion appVersion);
 
@@ -80,13 +80,12 @@ public class CheckUpdatePresenter extends BasePresenter {
     }
 
     public void downloadAndInstallApk() {
-        if (apkFile != null && apkFile.exists()) {
+        String filename = String.format("%s-%s.apk", appName, appVersion.getVersionName());
+        apkFile = fileModelFactory.createFileModel(String.format("%s/s", cachePath, filename));
+        if (apkFile.exists() && apkFile.length() == appVersion.getLength()) {
             handler.installApk(apkFile);
             return;
         }
-
-        String filename = String.format("%s-%s.apk", appName, appVersion.getVersionName());
-        apkFile = fileModelFactory.createFileModel(String.format("%s/s", cachePath, filename));
 
         view.renderDownloadTaskStart(appVersion);
 
@@ -117,22 +116,22 @@ public class CheckUpdatePresenter extends BasePresenter {
 
     public void checkUpdate() {
         view.renderCheckStart();
-        CheckUpdateHelper.checkUpdate(ApplicationFactory.getApplication(), new CheckUpdateHelper
-                .CheckUpdateCallback() {
+        CheckUpdateHelper.checkUpdate(ApplicationFactory.getApplication(),
+                new CheckUpdateHelper.CheckUpdateCallback() {
                     @Override
                     public void onNewVersion(AppVersion appVersion) {
-                        view.renderCheckFinishWithNewVersion(appVersion);
                         CheckUpdatePresenter.this.appVersion = appVersion;
+                        view.renderCheckFinishWithNewVersion(appVersion);
                     }
 
                     @Override
                     public void onNoNewVersion(AppVersion appVersion) {
-                        view.renderCheckFinishWithNoNewVersion(appVersion);
                         CheckUpdatePresenter.this.appVersion = appVersion;
+                        view.renderCheckFinishWithNoNewVersion(appVersion);
                     }
 
                     @Override
-                    public void onError(Exception e) {
+                    public void onError(Throwable e) {
                         view.renderCheckFailed(CheckUpdatePresenter.this.appVersion, e);
                     }
 

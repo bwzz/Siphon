@@ -39,4 +39,9 @@ public class AppHelper {
         return info.applicationInfo.loadLabel(context.getPackageManager()).toString();
     }
 
+    public static String getPackageName(Context context) {
+        PackageInfo info = getPackageInfo(context);
+        return info.applicationInfo.packageName;
+    }
+
 }

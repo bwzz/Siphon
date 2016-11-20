@@ -30,4 +30,11 @@ public class ServiceFactory {
         return restAdapter.create(SiphonService.class);
     }
 
+    public static FirService createFirService() {
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(FirService.BASE_URL)
+                .setLogLevel(LogLevel.BASIC)
+                .build();
+        return restAdapter.create(FirService.class);
+    }
 }

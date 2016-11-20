@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.yuantiku.siphon.R;
+import com.yuantiku.siphon.data.AppVersion;
 import com.yuantiku.siphon.factory.EmptyObjectFactory;
 import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.presenter.CheckUpdatePresenter;
@@ -17,7 +18,6 @@ import com.yuantiku.siphon.mvp.presenter.CheckUpdatePresenter;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import im.fir.sdk.version.AppVersion;
 
 /**
  * Created by wanghb on 15/9/4.
@@ -76,7 +76,7 @@ public class CheckUpdateViewModel extends BaseViewModel implements CheckUpdatePr
     }
 
     @Override
-    public void renderCheckFailed(AppVersion oldVersion, Exception e) {
+    public void renderCheckFailed(AppVersion oldVersion, Throwable e) {
         finishCheck("orz，失败了，点上面的图标重试", false);
     }
 

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.yuantiku.siphon.constant.Key;
+import com.yuantiku.siphon.data.AppVersion;
 import com.yuantiku.siphon.helper.ApkHelper;
 import com.yuantiku.siphon.helper.AppHelper;
 import com.yuantiku.siphon.helper.JsonHelper;
@@ -15,8 +16,6 @@ import com.yuantiku.siphon.mvp.imodel.IFileModel;
 import com.yuantiku.siphon.mvp.presenter.CheckUpdatePresenter;
 import com.yuantiku.siphon.mvp.presenter.PresenterFactory;
 import com.yuantiku.siphon.mvp.viewmodel.CheckUpdateViewModel;
-
-import im.fir.sdk.version.AppVersion;
 
 /**
  * Created by wanghb on 15/9/4.

@@ -7,6 +7,7 @@ import com.yuantiku.siphon.mvp.presenter.AppListPresenter;
 import com.yuantiku.siphon.mvp.presenter.CheckUpdatePresenter;
 import com.yuantiku.siphon.mvp.presenter.FileEntriesListPresenter;
 import com.yuantiku.siphon.mvp.presenter.HomePresenter;
+import com.yuantiku.siphon.service.CheckUpdateService;
 import com.yuantiku.siphon.service.WorkService;
 
 import javax.inject.Singleton;
@@ -21,6 +22,8 @@ import dagger.Component;
 public interface ApplicationComponent {
 
     void inject(WorkService workService);
+
+    void inject(CheckUpdateService updateService);
 
     // region Inject presenters
     void inject(AppListPresenter appListPresenter);

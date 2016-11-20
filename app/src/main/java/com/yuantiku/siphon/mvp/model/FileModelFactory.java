@@ -51,5 +51,10 @@ public class FileModelFactory implements IFileModelFactory {
         public boolean delete() {
             return file.delete();
         }
+
+        @Override
+        public long length() {
+            return file.length();
+        }
     }
 }

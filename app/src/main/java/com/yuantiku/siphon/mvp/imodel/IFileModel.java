@@ -9,4 +9,6 @@ public interface IFileModel {
     String getPath();
 
     boolean delete();
+
+    long length();
 }
