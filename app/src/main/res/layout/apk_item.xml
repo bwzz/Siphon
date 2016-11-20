@@ -12,7 +12,7 @@
         android:layout_height="60dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
-        android:src="@drawable/tutor"/>
+        android:src="@drawable/fir_logo"/>
 
     <TextView
         android:id="@+id/type"

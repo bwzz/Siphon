@@ -31,10 +31,15 @@ public class LaunchHelper {
 
     public static LaunchArgument createArgument(Class<? extends Fragment> fragmentClass,
             Context context, Bundle bundle, ResultCallback callback) {
+        return createArgument(fragmentClass.getName(), context, bundle, callback);
+    }
+    
+    public static LaunchArgument createArgument(String fragmentClassName,
+            Context context, Bundle bundle, ResultCallback callback) {
         FragmentPackage fragmentPackage = new FragmentPackage();
         fragmentPackage.setContainer(android.R.id.content)
                 .setArgument(bundle)
-                .setFragmentClassName(fragmentClass.getName());
+                .setFragmentClassName(fragmentClassName);
 
         LaunchArgument argument = ReuseIntentBuilder.build()
                 .activity(ContainerActivity.class)

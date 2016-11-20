@@ -9,4 +9,5 @@ import com.yuantiku.siphon.data.apkconfigs.ApkConfig;
 public interface Key {
     String AppVersion = AppVersion.class.getName();
     String ApkConfig = ApkConfig.class.getName();
+    String FRAGMENT = "FRAGMENT";
 }
