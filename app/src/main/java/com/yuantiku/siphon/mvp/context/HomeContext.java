@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import bwzz.activityCallback.LaunchArgument;
+import proxysetter.ProxyFragment;
 
 import com.yuantiku.siphon.R;
 import com.yuantiku.siphon.constant.Key;
@@ -80,6 +81,9 @@ public class HomeContext extends BaseContext implements HomeViewModel.IHandler,
                 break;
             case R.id.action_login:
                 launchFragment(TutorAccountListFragment.class);
+                break;
+            case R.id.action_set_proxy:
+                launchFragment(ProxyFragment.class);
                 break;
         }
 
