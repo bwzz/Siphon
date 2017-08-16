@@ -25,7 +25,6 @@ public class Siphon extends Application {
         application = this;
         super.onCreate();
         FIR.init(this);
-        FIR.setDebug(BuildConfig.DEBUG);
         this.initializeInjector();
         PresenterFactory.initApplicationComponent(applicationComponent);
         SingletonFactory.init(applicationComponent);
