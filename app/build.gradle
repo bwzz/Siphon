@@ -7,7 +7,7 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.3"
     def versionMajor = 1
-    def versionMinor = 4
+    def versionMinor = 5
 
     defaultConfig {
         applicationId "com.yuantiku.siphon"
@@ -111,7 +111,7 @@ dependencies {
 
 fir {
     apiToken project.property("fir.apiToken")
-    changeLog '轻松登录辅导，再也不用输入账号密码了\n有诚意的更新提醒'
+    changeLog '也许是有诚意的更新提醒做作用的时候了\n快速设置和清除代理'
 }
 
 bughd{
